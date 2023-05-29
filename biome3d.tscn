@@ -1,0 +1,65 @@
+[gd_scene load_steps=11 format=3 uid="uid://b1fp8ne5arj43"]
+
+[ext_resource type="Shader" path="res://Resources/SandShader/biome3d.gdshader" id="1_jbyfi"]
+[ext_resource type="Texture2D" uid="uid://dnq6t5k0miaxp" path="res://Resources/SandShader/sand_shallow_horizontal.jpg" id="2_hju4d"]
+[ext_resource type="Texture2D" uid="uid://dkpmyc2wcpa0n" path="res://Resources/SandShader/sand_steep_horizontal.jpg" id="3_7kymm"]
+[ext_resource type="Texture2D" uid="uid://dfiowbreq3ofj" path="res://Resources/SandShader/sand_shallow_vertical.jpg" id="3_yw6ul"]
+[ext_resource type="Texture2D" uid="uid://bfd1jgcifyhdg" path="res://Resources/SandShader/sand_steep_vertical.jpg" id="5_ox01k"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_le8c4"]
+size = Vector2(200, 200)
+subdivide_width = 1000
+subdivide_depth = 1000
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4eupn"]
+render_priority = 0
+shader = ExtResource("1_jbyfi")
+shader_parameter/Height_Dune = 11.957
+shader_parameter/Height_Detail = 0.05
+shader_parameter/_SandStrength = 0.369
+shader_parameter/_TerrainRimPower = 1.401
+shader_parameter/_TerrainRimStrength = 0.237
+shader_parameter/_OceanSpecularPower = 0.1
+shader_parameter/_OceanSpecularStrength = 0.1
+shader_parameter/_GlitterThreshold = 0.024
+shader_parameter/_SteepnessSharpnessPower = 1.0
+shader_parameter/_AlignmentSharpnessPower = 1.0
+shader_parameter/_TerrainColor = Color(0.631373, 0.623529, 0.486275, 1)
+shader_parameter/_ShadowColor = Color(0.466667, 0.360784, 0.309804, 1)
+shader_parameter/_TerrainRimColor = Color(0.396078, 0.45098, 0.54902, 1)
+shader_parameter/_OceanSpecularColor = Color(0.627451, 0.72549, 0.729412, 1)
+shader_parameter/_GlitterColor = Color(0.172549, 0.219608, 0.207843, 1)
+shader_parameter/_ShallowHorizontalTex = ExtResource("2_hju4d")
+shader_parameter/_ShallowVerticalTex = ExtResource("3_yw6ul")
+shader_parameter/_SteepHorizontalTex = ExtResource("3_7kymm")
+shader_parameter/_SteepVerticalTex = ExtResource("5_ox01k")
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_iyulu"]
+
+[sub_resource type="Sky" id="Sky_3gucy"]
+sky_material = SubResource("ProceduralSkyMaterial_iyulu")
+
+[sub_resource type="Environment" id="Environment_wtkma"]
+background_mode = 2
+sky = SubResource("Sky_3gucy")
+ambient_light_source = 3
+reflected_light_source = 2
+
+[node name="Node3D" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_le8c4")
+surface_material_override/0 = SubResource("ShaderMaterial_4eupn")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_wtkma")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.636631, 0.75396, -0.162007, 0.3563, -0.101264, 0.928868, 0.683924, -0.649069, -0.333104, 0, 22.9531, 0)
+light_color = Color(0, 0, 0, 1)
+shadow_enabled = true
+directional_shadow_split_1 = 0.282
+directional_shadow_split_2 = 0.507
+directional_shadow_split_3 = 0.616
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.807

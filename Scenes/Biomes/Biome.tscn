@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3 uid="uid://bktm6646q581d"]
+
+[ext_resource type="Script" path="res://scripts/Biomes/Biome.gd" id="1_p50bf"]
+[ext_resource type="Shader" path="res://Resources/SandShader/2DTerrain.gdshader" id="2_w2j2p"]
+[ext_resource type="Texture2D" uid="uid://decjllrnl177a" path="res://Assets/SandTile.png" id="3_him1i"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hh1vw"]
+shader = ExtResource("2_w2j2p")
+shader_parameter/pixelSize = 128
+shader_parameter/heighest_landmass = 0.691
+shader_parameter/lowest_landmass = 0.0
+shader_parameter/landmass = 1.0
+shader_parameter/density = 5.0
+shader_parameter/seed = 1337.0
+shader_parameter/iResolution = Vector2(64, 64)
+shader_parameter/uni_radius = 100.0
+shader_parameter/color_1 = Color(0.631373, 0.623529, 0.486275, 1)
+shader_parameter/color_2 = Color(0.7, 0.6937, 0.574, 1)
+shader_parameter/color_3 = Color(0.631373, 0.623529, 0.486275, 1)
+shader_parameter/color_4 = Color(0.631373, 0.623529, 0.486275, 1)
+shader_parameter/color_5 = Color(0.466667, 0.454902, 0.309804, 1)
+shader_parameter/color_6 = Color(0.39, 0.38298, 0.2847, 1)
+shader_parameter/color_7 = Color(0.34, 0.33609, 0.2618, 1)
+shader_parameter/color_8 = Color(0.47, 0.461853, 0.3478, 1)
+shader_parameter/color_9 = Color(0.380392, 0.317647, 0.317647, 1)
+shader_parameter/color_10 = Color(0.470588, 0.384314, 0.341176, 1)
+
+[sub_resource type="Gradient" id="Gradient_fnwep"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.501961)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_xkpd3"]
+gradient = SubResource("Gradient_fnwep")
+fill = 1
+fill_from = Vector2(0.452991, 0.482906)
+
+[node name="Biome" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_p50bf")
+
+[node name="BaseTexture" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_hh1vw")
+scale = Vector2(120.563, 85.625)
+texture = ExtResource("3_him1i")
+region_rect = Rect2(0, 0, 32, 32)
+
+[node name="DirectionalLight2D" type="DirectionalLight2D" parent="."]
+visible = false
+color = Color(0.309804, 0.321569, 0.466667, 1)
+energy = 1.12
+blend_mode = 1
+height = 0.44
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+visible = false
+texture = SubResource("GradientTexture2D_xkpd3")
+texture_scale = 29.47
+height = 194.0

@@ -1,0 +1,76 @@
+[gd_scene load_steps=5 format=3 uid="uid://te84lilqmwp0"]
+
+[ext_resource type="Script" path="res://addons/PaletteTools/Scripts/custom_picker.gd" id="1_oxy04"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jcc3n"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t77tn"]
+bg_color = Color(0.839216, 0.839216, 0.839216, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ykbik"]
+bg_color = Color(0.839216, 0.839216, 0.839216, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="CustomPicker" type="PopupPanel"]
+initial_position = 2
+title = "Palette Tools Color-Picker"
+size = Vector2i(355, 680)
+visible = true
+content_scale_mode = 1
+content_scale_aspect = 1
+script = ExtResource("1_oxy04")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 351.0
+offset_bottom = 676.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+custom_minimum_size = Vector2(300, 600)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="ColorPicker" type="ColorPicker" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+picker_shape = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Saved Palettes:
+"
+
+[node name="Spacer" type="Control" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="ScrollContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+tooltip_text = "Applies palette to Swatches. Alternatively you can double click a palette or press enter with a palette highlighted"
+text = "Apply to Swatches"
+
+[node name="SavedPalettes" type="ItemList" parent="ScrollContainer/VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "Double click on palette or select one and hit enter to apply it."
+theme_override_colors/font_selected_color = Color(0.0862745, 0.0862745, 0.0862745, 1)
+theme_override_styles/focus = SubResource("StyleBoxEmpty_jcc3n")
+theme_override_styles/selected = SubResource("StyleBoxFlat_t77tn")
+theme_override_styles/selected_focus = SubResource("StyleBoxFlat_ykbik")
+auto_height = true
+item_count = 1
+same_column_width = true
+item_0/text = "No Palettes"

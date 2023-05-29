@@ -1,0 +1,473 @@
+[gd_resource type="VisualShader" load_steps=35 format=3 uid="uid://baa7kwomnm77n"]
+
+[ext_resource type="Script" path="res://addons/shaderV/rgba/noise/fractal/perlin2d_fractal.gd" id="1_kn5wo"]
+[ext_resource type="Script" path="res://addons/shaderV/uv/scaleUV.gd" id="2_ri6ox"]
+[ext_resource type="Script" path="res://addons/shaderV/uv/rotate.gd" id="3_2obw8"]
+[ext_resource type="Script" path="res://addons/shaderV/uv/tilingNoffset.gd" id="4_lx131"]
+[ext_resource type="Script" path="res://addons/shaderV/tools/relay.gd" id="5_g7j88"]
+
+[sub_resource type="VisualShaderNodeCustom" id="VisualShaderNodeCustom_tn4jm"]
+output_port_for_preview = 0
+default_input_values = [1, 4, 2, Vector3(2, 2, 0), 3, 1.0, 4, 0.5, 5, 0.5, 6, 0.5, 7, Vector3(0.5, 0.5, 0)]
+initialized = true
+script = ExtResource("1_kn5wo")
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_bj2nd"]
+parameter_name = "DistortNoisePeriod"
+default_value_enabled = true
+default_value = 2.0
+
+[sub_resource type="VisualShaderNodeVectorOp" id="VisualShaderNodeVectorOp_2h7xv"]
+default_input_values = [0, Vector2(0, 0), 1, Vector2(0, 0)]
+op_type = 0
+operator = 2
+
+[sub_resource type="VisualShaderNodeRemap" id="VisualShaderNodeRemap_6wuiv"]
+default_input_values = [1, 0.0, 2, 1.0, 3, -1.0, 4, 1.0]
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_h8aud"]
+operator = 2
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_2nfhf"]
+parameter_name = "DistortAmplitude"
+default_value_enabled = true
+default_value = 2.0
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_nwq4g"]
+default_input_values = [0, 0.0, 1, 6.283]
+operator = 2
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_lwh24"]
+input_name = "uv"
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_5mbof"]
+parameter_name = "SineAmplitude"
+default_value_enabled = true
+default_value = 1.0
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_0h14l"]
+output_port_for_preview = 0
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_fdil6"]
+parameter_name = "PolygonSides"
+default_value_enabled = true
+default_value = 3.0
+
+[sub_resource type="VisualShaderNodeFloatFunc" id="VisualShaderNodeFloatFunc_y8jvs"]
+output_port_for_preview = 0
+function = 17
+
+[sub_resource type="VisualShaderNodeExpression" id="VisualShaderNodeExpression_ca2xk"]
+size = Vector2(371.021, 214.228)
+expression = "float pi = PI; 
+float aWidth = Width * cos(pi / Sides);
+float aHeight = Height * cos(pi / Sides);
+vec2 nuv = (uv * 2.0 - 1.0) / vec2(aWidth, aHeight);
+nuv.y *= -1.0;
+float pCoord = atan(nuv.x, nuv.y);
+float r = 2.0 * pi / Sides;
+float dist = cos(floor(0.5 + pCoord / r) * r - pCoord) * length(nuv);
+Out = 1.0 - dist;
+
+"
+
+[sub_resource type="VisualShaderNodeFloatConstant" id="VisualShaderNodeFloatConstant_i14h0"]
+constant = 1.0
+
+[sub_resource type="VisualShaderNodeCustom" id="VisualShaderNodeCustom_8bvvp"]
+output_port_for_preview = 0
+default_input_values = [1, Vector3(0, 0, 0)]
+initialized = true
+script = ExtResource("4_lx131")
+
+[sub_resource type="VisualShaderNodeVec2Parameter" id="VisualShaderNodeVec2Parameter_jvb7c"]
+parameter_name = "UVTiling"
+default_value_enabled = true
+default_value = Vector2(2, 2)
+
+[sub_resource type="VisualShaderNodeVectorOp" id="VisualShaderNodeVectorOp_er4jr"]
+default_input_values = [0, Vector2(0, 0), 1, Vector2(0, 0)]
+op_type = 0
+operator = 2
+
+[sub_resource type="VisualShaderNodeCustom" id="VisualShaderNodeCustom_1h0yh"]
+initialized = true
+script = ExtResource("5_g7j88")
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_vqg7x"]
+
+[sub_resource type="VisualShaderNodeCustom" id="VisualShaderNodeCustom_t6ugu"]
+default_input_values = [1, Vector3(1, 1, 0), 2, Vector3(0.5, 0.5, 0)]
+initialized = true
+script = ExtResource("2_ri6ox")
+
+[sub_resource type="VisualShaderNodeCustom" id="VisualShaderNodeCustom_k1qkt"]
+default_input_values = [1, 0.0, 2, Vector3(0.5, 0.5, 0)]
+initialized = true
+script = ExtResource("3_2obw8")
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_5s45e"]
+parameter_name = "SineRotation"
+default_value_enabled = true
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_ff1lf"]
+parameter_name = "UVScale"
+default_value_enabled = true
+default_value = 1.0
+
+[sub_resource type="VisualShaderNodeVectorDecompose" id="VisualShaderNodeVectorDecompose_pdg38"]
+default_input_values = [0, Vector2(0, 0)]
+op_type = 0
+
+[sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_5penf"]
+parameter_name = "SineFrequency"
+default_value_enabled = true
+default_value = 10.0
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_0t3f7"]
+operator = 2
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_5tdqk"]
+default_input_values = [0, 0.0, 1, 6.283]
+operator = 2
+
+[sub_resource type="VisualShaderNodeFloatFunc" id="VisualShaderNodeFloatFunc_vqu24"]
+function = 0
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_h5xd7"]
+output_port_for_preview = 0
+input_name = "color"
+
+[resource]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+uniform float DistortNoisePeriod = 2;
+uniform float UVScale = 1;
+uniform float SineRotation = 0;
+uniform float DistortAmplitude = 2;
+uniform float SineFrequency = 10;
+uniform float SineAmplitude = 1;
+uniform vec2 UVTiling = vec2(2.000000, 2.000000);
+uniform float PolygonSides = 3;
+
+
+// ScaleUV
+vec2 _scaleUV(vec2 _scale_uv, vec2 _scale_vect, vec2 _pivot_vect) {
+	return (_scale_uv - _pivot_vect) * _scale_vect + _pivot_vect;
+}
+// RotateUV
+vec3 _rotateUV(vec3 _rotate_uv, vec2 _rotate_pivot_vect, float _rotate_radians){
+	//_r0tation_r0tate = radians(_r0tationDeg_r0tate);
+	vec2 _rotation_angle = vec2(cos(_rotate_radians), sin(_rotate_radians));
+	_rotate_uv.xy -= _rotate_pivot_vect;
+	_rotate_uv.xy = vec2((_rotate_uv.x*_rotation_angle.x-_rotate_uv.y*_rotation_angle.y), 
+						 (_rotate_uv.x*_rotation_angle.y+_rotate_uv.y*_rotation_angle.x));
+	_rotate_uv.xy += _rotate_pivot_vect;
+	return _rotate_uv;
+}
+// FractalPerlinNoise2D
+float _perlin2dNoiseFuncFractal(vec2 P) {
+	vec4 Pi = floor(vec4(P, P)) + vec4(0.0, 0.0, 1.0, 1.0);
+	vec4 Pf = fract(vec4(P, P)) - vec4(0.0, 0.0, 1.0, 1.0);
+	
+	Pi = Pi - floor(Pi * (1.0 / 289.0)) * 289.0;
+	vec4 ix = Pi.xzxz;
+	vec4 iy = Pi.yyww;
+	vec4 fx = Pf.xzxz;
+	vec4 fy = Pf.yyww;
+	
+	vec4 i = (((((((ix*34.0)+1.0)*ix)-floor((((ix*34.0)+1.0)*ix)*(1.0/289.0))*289.0 + iy)*34.0)+1.0)*
+		((((ix*34.0)+1.0)*ix)-floor((((ix*34.0)+1.0)*ix)*(1.0/289.0))*289.0 + iy))-
+		floor((((((((ix*34.0)+1.0)*ix)-floor((((ix*34.0)+1.0)*ix)*(1.0/289.0))*289.0 + iy)*34.0)+1.0)*
+		((((ix*34.0)+1.0)*ix)-floor((((ix*34.0)+1.0)*ix)*(1.0/289.0))*289.0 + iy))*(1.0/289.0))*289.0;
+	
+	vec4 gx = fract(i * (1.0 / 41.0)) * 2.0 - 1.0 ;
+	vec4 gy = abs(gx) - 0.5 ;
+	vec4 tx = floor(gx + 0.5);
+	gx = gx - tx;
+	
+	vec2 g00 = vec2(gx.x,gy.x);
+	vec2 g10 = vec2(gx.y,gy.y);
+	vec2 g01 = vec2(gx.z,gy.z);
+	vec2 g11 = vec2(gx.w,gy.w);
+	
+	vec4 norm = 1.79284291400159 - 0.85373472095314 * vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11));
+	g00 *= norm.x;
+	g01 *= norm.y;
+	g10 *= norm.z;
+	g11 *= norm.w;
+	
+	float n00 = dot(g00, vec2(fx.x, fy.x));
+	float n10 = dot(g10, vec2(fx.y, fy.y));
+	float n01 = dot(g01, vec2(fx.z, fy.z));
+	float n11 = dot(g11, vec2(fx.w, fy.w));
+	
+	vec2 fade_xy = Pf.xy * Pf.xy * Pf.xy * (Pf.xy * (Pf.xy * 6.0 - 15.0) + 10.0);
+	vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+	float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+	return 2.3 * n_xy;
+}
+float _perlinNoise2DFBM(vec2 _uv_pn2fbm, int _oct_pn2fbm, vec2 _per_pn2fbm, float _lac_pn2fbm,
+						float _persist_pn2fbm, float _rot_pn2fbm, float _ampl_pn2fbm, vec2 _shift_pn2fbm) {
+	float _v = 0.0;
+	float _a = _ampl_pn2fbm;
+	mat2 _r0t = mat2(vec2(cos(_rot_pn2fbm), sin(_rot_pn2fbm)), vec2(-sin(_rot_pn2fbm), cos(_rot_pn2fbm)));
+	for (int i = 0; i < _oct_pn2fbm; ++i) {
+		_v += _a * _perlin2dNoiseFuncFractal(_uv_pn2fbm * _per_pn2fbm);
+		_uv_pn2fbm = _r0t * _uv_pn2fbm * _lac_pn2fbm + _shift_pn2fbm;
+		_a *= _persist_pn2fbm;
+	}
+	return (min(_v, 1.0) + 1.0) * 0.5;
+}
+// TilingAndOffsetUV
+vec2 _tiling_and_offset(vec2 _tiling_and_offset_uv, vec2 _tiling_and_offset_offset_vect){
+	return vec2(mod(_tiling_and_offset_uv.x + _tiling_and_offset_offset_vect.x, 1.0),
+				mod(_tiling_and_offset_uv.y + _tiling_and_offset_offset_vect.y, 1.0));
+}
+
+void fragment() {
+// FloatParameter:14
+	float n_out14p0 = DistortNoisePeriod;
+
+
+// Input:2
+	vec2 n_out2p0 = UV;
+
+
+// FloatParameter:37
+	float n_out37p0 = UVScale;
+
+
+	vec3 n_out34p0;
+// ScaleUV:34
+	vec3 n_in34p2 = vec3(0.50000, 0.50000, 0.00000);
+	{
+		n_out34p0.xy = _scaleUV(vec3(n_out2p0, 0.0).xy, vec3(n_out37p0).xy, n_in34p2.xy);
+	}
+
+
+// FloatParameter:36
+	float n_out36p0 = SineRotation;
+
+
+	vec3 n_out35p0;
+// RotateUV:35
+	vec3 n_in35p2 = vec3(0.50000, 0.50000, 0.00000);
+	{
+		n_out35p0 = _rotateUV(n_out34p0, n_in35p2.xy, n_out36p0);
+	}
+
+
+// VectorOp:15
+	vec2 n_out15p0 = vec2(n_out14p0) * vec2(n_out35p0.xy);
+
+
+	float n_out13p0;
+// FractalPerlinNoise2D:13
+	int n_in13p1 = 4;
+	float n_in13p3 = 1.00000;
+	float n_in13p4 = 0.50000;
+	float n_in13p5 = 0.50000;
+	float n_in13p6 = 0.50000;
+	vec3 n_in13p7 = vec3(0.50000, 0.50000, 0.00000);
+	{
+		n_out13p0 = _perlinNoise2DFBM(vec3(n_out15p0, 0.0).xy, int(n_in13p1), vec3(n_out14p0).xy, n_in13p3, n_in13p4, n_in13p5, n_in13p6, n_in13p7.xy);
+	}
+
+
+	float n_out16p0;
+// Remap:16
+	float n_in16p1 = 0.00000;
+	float n_in16p2 = 1.00000;
+	float n_in16p3 = -1.00000;
+	float n_in16p4 = 1.00000;
+	{
+		float __input_range = n_in16p2 - n_in16p1;
+		float __output_range = n_in16p4 - n_in16p3;
+		n_out16p0 = n_in16p3 + __output_range * ((n_out13p0 - n_in16p1) / __input_range);
+	}
+
+
+// FloatParameter:18
+	float n_out18p0 = DistortAmplitude;
+
+
+// FloatOp:17
+	float n_out17p0 = n_out16p0 * n_out18p0;
+
+
+// VectorDecompose:5
+	float n_out5p0 = vec2(n_out35p0.xy).x;
+	float n_out5p1 = vec2(n_out35p0.xy).y;
+
+
+// FloatParameter:6
+	float n_out6p0 = SineFrequency;
+
+
+// FloatOp:8
+	float n_in8p1 = 6.28300;
+	float n_out8p0 = n_out6p0 * n_in8p1;
+
+
+// FloatOp:7
+	float n_out7p0 = n_out5p1 * n_out8p0;
+
+
+// FloatFunc:9
+	float n_out9p0 = sin(n_out7p0);
+
+
+// FloatParameter:20
+	float n_out20p0 = SineAmplitude;
+
+
+// FloatOp:19
+	float n_out19p0 = n_out9p0 * n_out20p0;
+
+
+// FloatOp:21
+	float n_out21p0 = n_out17p0 + n_out19p0;
+
+
+// Vector2Parameter:30
+	vec2 n_out30p0 = UVTiling;
+
+
+// VectorOp:31
+	vec2 n_out31p0 = vec2(n_out35p0.xy) * n_out30p0;
+
+
+	vec3 n_out29p0;
+// TilingAndOffsetUV:29
+	vec3 n_in29p1 = vec3(0.00000, 0.00000, 0.00000);
+	{
+		n_out29p0 = vec3(_tiling_and_offset(vec3(n_out31p0, 0.0).xy, n_in29p1.xy), 0);
+	}
+
+
+	vec3 n_out32p0;
+// Relay:32
+	{
+		n_out32p0 = n_out29p0;
+	}
+
+
+// FloatOp:33
+	float n_out33p0 = n_out21p0 + n_out32p0.x;
+
+
+// FloatFunc:26
+	float n_out26p0 = fract(n_out33p0);
+
+
+// FloatParameter:23
+	float n_out23p0 = PolygonSides;
+
+
+// FloatConstant:28
+	float n_out28p0 = 1.000000;
+
+
+	float n_out27p0;
+// Expression:27
+	n_out27p0 = 0.0;
+	{
+		float pi = PI; 
+		float aWidth = n_out28p0 * cos(pi / n_out23p0);
+		float aHeight = n_out28p0 * cos(pi / n_out23p0);
+		vec2 nuv = (vec2(n_out26p0) * 2.0 - 1.0) / vec2(aWidth, aHeight);
+		nuv.y *= -1.0;
+		float pCoord = atan(nuv.x, nuv.y);
+		float r = 2.0 * pi / n_out23p0;
+		float dist = cos(floor(0.5 + pCoord / r) * r - pCoord) * length(nuv);
+		n_out27p0 = 1.0 - dist;
+		
+		
+	}
+
+
+// Output:0
+	COLOR.rgb = vec3(n_out27p0);
+
+
+}
+"
+graph_offset = Vector2(-858.232, -572.408)
+mode = 1
+flags/light_only = false
+nodes/vertex/2/node = SubResource("VisualShaderNodeInput_h5xd7")
+nodes/vertex/2/position = Vector2(-100, 140)
+nodes/fragment/0/position = Vector2(2100, -240)
+nodes/fragment/2/node = SubResource("VisualShaderNodeInput_lwh24")
+nodes/fragment/2/position = Vector2(-2100, 40)
+nodes/fragment/5/node = SubResource("VisualShaderNodeVectorDecompose_pdg38")
+nodes/fragment/5/position = Vector2(-520, 100)
+nodes/fragment/6/node = SubResource("VisualShaderNodeFloatParameter_5penf")
+nodes/fragment/6/position = Vector2(-580, 260)
+nodes/fragment/7/node = SubResource("VisualShaderNodeFloatOp_0t3f7")
+nodes/fragment/7/position = Vector2(-120, 100)
+nodes/fragment/8/node = SubResource("VisualShaderNodeFloatOp_5tdqk")
+nodes/fragment/8/position = Vector2(-220, 280)
+nodes/fragment/9/node = SubResource("VisualShaderNodeFloatFunc_vqu24")
+nodes/fragment/9/position = Vector2(60, 140)
+nodes/fragment/13/node = SubResource("VisualShaderNodeCustom_tn4jm")
+nodes/fragment/13/position = Vector2(-480, -360)
+nodes/fragment/14/node = SubResource("VisualShaderNodeFloatParameter_bj2nd")
+nodes/fragment/14/position = Vector2(-1020, -260)
+nodes/fragment/15/node = SubResource("VisualShaderNodeVectorOp_2h7xv")
+nodes/fragment/15/position = Vector2(-700, -420)
+nodes/fragment/16/node = SubResource("VisualShaderNodeRemap_6wuiv")
+nodes/fragment/16/position = Vector2(-80, -340)
+nodes/fragment/17/node = SubResource("VisualShaderNodeFloatOp_h8aud")
+nodes/fragment/17/position = Vector2(180, -280)
+nodes/fragment/18/node = SubResource("VisualShaderNodeFloatParameter_2nfhf")
+nodes/fragment/18/position = Vector2(-260, -160)
+nodes/fragment/19/node = SubResource("VisualShaderNodeFloatOp_nwq4g")
+nodes/fragment/19/position = Vector2(260, 120)
+nodes/fragment/20/node = SubResource("VisualShaderNodeFloatParameter_5mbof")
+nodes/fragment/20/position = Vector2(0, 300)
+nodes/fragment/21/node = SubResource("VisualShaderNodeFloatOp_0h14l")
+nodes/fragment/21/position = Vector2(460, -280)
+nodes/fragment/23/node = SubResource("VisualShaderNodeFloatParameter_fdil6")
+nodes/fragment/23/position = Vector2(1160, -420)
+nodes/fragment/26/node = SubResource("VisualShaderNodeFloatFunc_y8jvs")
+nodes/fragment/26/position = Vector2(940, -220)
+nodes/fragment/27/node = SubResource("VisualShaderNodeExpression_ca2xk")
+nodes/fragment/27/position = Vector2(1420, -280)
+nodes/fragment/27/size = Vector2(371.021, 214.228)
+nodes/fragment/27/input_ports = "0,3,uv;1,0,Sides;2,0,Width;3,0,Height;"
+nodes/fragment/27/output_ports = "0,0,Out;"
+nodes/fragment/27/expression = "float pi = PI; 
+float aWidth = Width * cos(pi / Sides);
+float aHeight = Height * cos(pi / Sides);
+vec2 nuv = (uv * 2.0 - 1.0) / vec2(aWidth, aHeight);
+nuv.y *= -1.0;
+float pCoord = atan(nuv.x, nuv.y);
+float r = 2.0 * pi / Sides;
+float dist = cos(floor(0.5 + pCoord / r) * r - pCoord) * length(nuv);
+Out = 1.0 - dist;
+
+"
+nodes/fragment/28/node = SubResource("VisualShaderNodeFloatConstant_i14h0")
+nodes/fragment/28/position = Vector2(1220, -160)
+nodes/fragment/29/node = SubResource("VisualShaderNodeCustom_8bvvp")
+nodes/fragment/29/position = Vector2(-680, 480)
+nodes/fragment/30/node = SubResource("VisualShaderNodeVec2Parameter_jvb7c")
+nodes/fragment/30/position = Vector2(-1180, 420)
+nodes/fragment/31/node = SubResource("VisualShaderNodeVectorOp_er4jr")
+nodes/fragment/31/position = Vector2(-860, 360)
+nodes/fragment/32/node = SubResource("VisualShaderNodeCustom_1h0yh")
+nodes/fragment/32/position = Vector2(440, 480)
+nodes/fragment/33/node = SubResource("VisualShaderNodeFloatOp_vqg7x")
+nodes/fragment/33/position = Vector2(740, -200)
+nodes/fragment/34/node = SubResource("VisualShaderNodeCustom_t6ugu")
+nodes/fragment/34/position = Vector2(-1560, 0)
+nodes/fragment/35/node = SubResource("VisualShaderNodeCustom_k1qkt")
+nodes/fragment/35/position = Vector2(-1320, 0)
+nodes/fragment/36/node = SubResource("VisualShaderNodeFloatParameter_5s45e")
+nodes/fragment/36/position = Vector2(-1640, 200)
+nodes/fragment/37/node = SubResource("VisualShaderNodeFloatParameter_ff1lf")
+nodes/fragment/37/position = Vector2(-1960, 200)
+nodes/fragment/connections = PackedInt32Array(5, 1, 7, 0, 6, 0, 8, 0, 8, 0, 7, 1, 7, 0, 9, 0, 14, 0, 13, 2, 14, 0, 15, 0, 15, 0, 13, 0, 13, 0, 16, 0, 16, 0, 17, 0, 18, 0, 17, 1, 9, 0, 19, 0, 20, 0, 19, 1, 17, 0, 21, 0, 19, 0, 21, 1, 26, 0, 27, 0, 23, 0, 27, 1, 28, 0, 27, 2, 28, 0, 27, 3, 30, 0, 31, 1, 31, 0, 29, 0, 29, 0, 32, 0, 32, 0, 33, 1, 21, 0, 33, 0, 33, 0, 26, 0, 27, 0, 0, 0, 37, 0, 34, 1, 34, 0, 35, 0, 36, 0, 35, 1, 35, 0, 15, 1, 35, 0, 5, 0, 2, 0, 34, 0, 35, 0, 31, 0)
