@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://c7e4x5lnll8cl"
+path="res://.godot/imported/ClipPlaneMesh.obj-8429972417531cae9b3f91c19d21f212.mesh"
+
+[deps]
+
+files=["res://.godot/imported/ClipPlaneMesh.obj-8429972417531cae9b3f91c19d21f212.mesh"]
+
+source_file="res://Resources/SandShader/ClipPlaneMesh.obj"
+dest_files=["res://.godot/imported/ClipPlaneMesh.obj-8429972417531cae9b3f91c19d21f212.mesh", "res://.godot/imported/ClipPlaneMesh.obj-8429972417531cae9b3f91c19d21f212.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=false

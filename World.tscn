@@ -6,3 +6,4 @@
 texture_filter = 1
 
 [node name="car" parent="." instance=ExtResource("2_n3qh1")]
+visible = false

@@ -12,7 +12,7 @@ config_version=5
 
 config/name="no bullshit drifting"
 config/description="Small car game"
-run/main_scene="res://World.tscn"
+run/main_scene="res://node_3d.tscn"
 config/features=PackedStringArray("4.0")
 boot_splash/bg_color=Color(0.262745, 0.317647, 0.356863, 1)
 
@@ -38,7 +38,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/BurstParticles2D/plugin.cfg", "res://addons/QuickPluginManager/plugin.cfg", "res://addons/compass/plugin.cfg", "res://addons/dynamic_day_night_cycles/plugin.cfg", "res://addons/extra_export_hints/plugin.cfg", "res://addons/radial_menu/plugin.cfg", "res://addons/softbody2d/plugin.cfg", "res://addons/trail_2d/plugin.cfg", "res://addons/vizpath/plugin.cfg", "res://addons/PaletteTools/plugin.cfg", "res://addons/debug_menu/plugin.cfg", "res://addons/sprite_painter/plugin.cfg", "res://addons/AsepriteWizard/plugin.cfg", "res://addons/Rotor Node/plugin.cfg", "res://addons/easy_velocity_vector_display/plugin.cfg")
+enabled=PackedStringArray("res://addons/BurstParticles2D/plugin.cfg", "res://addons/QuickPluginManager/plugin.cfg", "res://addons/compass/plugin.cfg", "res://addons/dynamic_day_night_cycles/plugin.cfg", "res://addons/extra_export_hints/plugin.cfg", "res://addons/radial_menu/plugin.cfg", "res://addons/softbody2d/plugin.cfg", "res://addons/trail_2d/plugin.cfg", "res://addons/vizpath/plugin.cfg", "res://addons/PaletteTools/plugin.cfg", "res://addons/debug_menu/plugin.cfg", "res://addons/sprite_painter/plugin.cfg", "res://addons/AsepriteWizard/plugin.cfg", "res://addons/Rotor Node/plugin.cfg", "res://addons/easy_velocity_vector_display/plugin.cfg", "res://addons/freecam_3D/plugin.cfg", "res://addons/draw3d/plugin.cfg")
 
 [importer_defaults]
 
@@ -120,6 +120,11 @@ Handbrake={
 ]
 }
 
+[physics]
+
+3d/run_on_separate_thread=true
+common/physics_ticks_per_second=144
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
@@ -127,6 +132,7 @@ textures/lossless_compression/force_png=true
 driver/depth_prepass/enable=false
 textures/default_filters/anisotropic_filtering_level=0
 environment/defaults/default_clear_color=Color(0.262745, 0.317647, 0.356863, 1)
+occlusion_culling/use_occlusion_culling=true
 2d/snap/snap_2d_transforms_to_pixel=true
 quality/intended_usage/framebuffer_allocation=0
 quality/intended_usage/framebuffer_allocation.mobile=1
