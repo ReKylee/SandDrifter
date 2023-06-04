@@ -1,28 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://b1fp8ne5arj43"]
+[gd_scene load_steps=4 format=3 uid="uid://b1fp8ne5arj43"]
 
 [ext_resource type="Script" path="res://scripts/Biomes/WanderingTerrain.gd" id="1_3vf1i"]
 [ext_resource type="Material" uid="uid://bqvghd8uiy065" path="res://Resources/SandShader/SandMaterial.tres" id="1_pnckx"]
 [ext_resource type="ArrayMesh" uid="uid://c7e4x5lnll8cl" path="res://Resources/SandShader/ClipPlaneMesh.obj" id="1_xtoab"]
-[ext_resource type="Script" path="res://scripts/Biomes/CollisionTerrain.gd" id="4_xhnmk"]
-[ext_resource type="Texture2D" uid="uid://dajabms5jerwx" path="res://Resources/SandShader/Dune_Celular2DNoise.tres" id="5_8tmlj"]
-[ext_resource type="Texture2D" uid="uid://co1la5ng6mhee" path="res://Resources/SandShader/Dune_Simplex3DNoise.tres" id="6_1ak0u"]
 
-[sub_resource type="HeightMapShape3D" id="HeightMapShape3D_tjecl"]
-
-[node name="ClipPlane" type="StaticBody3D"]
+[node name="Biome" type="Node3D"]
 script = ExtResource("1_3vf1i")
 
-[node name="Terrain" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.490723, 26.3773, -5.34412)
-mesh = ExtResource("1_xtoab")
-surface_material_override/0 = ExtResource("1_pnckx")
+[node name="CollisionChunks" type="Node3D" parent="."]
 
-[node name="TerrainCollision" type="CollisionShape3D" parent="." node_paths=PackedStringArray("terrain")]
-transform = Transform3D(-1, 0, 1.50996e-07, 0, 1, 0, -1.50996e-07, 0, -1, 0, 0, 0)
-shape = SubResource("HeightMapShape3D_tjecl")
-script = ExtResource("4_xhnmk")
-terrain = NodePath("../Terrain")
-_cellular2dNoise = ExtResource("5_8tmlj")
-_simplex3dNoise = ExtResource("6_1ak0u")
+[node name="Terrain" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_xtoab")
+skeleton = NodePath("../CollisionChunks")
+surface_material_override/0 = ExtResource("1_pnckx")
 
 [node name="Timer" type="Timer" parent="."]

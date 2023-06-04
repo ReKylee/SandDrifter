@@ -37,14 +37,11 @@ float overlay(float a, float b) {
 }
 
 float CalculateHeight(vec2 uv) {
-	//float SimplexNoise = textureLod(_simplex3dNoise, uv, 0).r;
-	ivec2 newuv = ivec2(uv * vec2(512.0)) / 2; 
 	float SimplexNoise = textureLod(_simplex3dNoise, uv, 1).r;
-	vec2 simplexed_uv = vec2(SimplexNoise, SimplexNoise) * .1 + uv * (1.0-.1);
+	vec2 simplexed_uv = mix(uv, vec2(SimplexNoise, SimplexNoise), .1);
 	float DunesWorleyNoise = textureLod(_cellular2dNoise, simplexed_uv, 0).r * Height_Dune;
-	return DunesWorleyNoise;
 	
-	float DetailWorleyNoise = textureLod(_cellular2dNoise, simplexed_uv , 0).g;
+	float DetailWorleyNoise = textureLod(_cellular2dNoise, simplexed_uv , 0).r;
 	float DetailSimplexNoise = textureLod(_simplex3dNoise, simplexed_uv, 0).r;
 
 	float overlayed_details = overlay(DetailWorleyNoise, DetailSimplexNoise) * Height_Detail;
@@ -153,8 +150,7 @@ vec3 UnpackNormal(vec4 rgba) {
 
 void fragment() {
 	vec2 offsetUVs = UV + uv_offset;
-	ALBEDO = vec3(CalculateHeight(offsetUVs)) / Height_Dune;
-	
+	ALBEDO = _TerrainColor;
 	// Calculates normal in world space
 	vec3 N_WORLD = NORMAL.x * TANGENT + NORMAL.y * BINORMAL + NORMAL.z * NORMAL;
 	vec3 UP_WORLD = vec3(0, 1, 0);

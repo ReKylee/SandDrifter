@@ -120,6 +120,10 @@ Handbrake={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_4="Chunks"
+
 [physics]
 
 3d/run_on_separate_thread=true

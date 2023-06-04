@@ -1,7 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://dyymsm0hk66id"]
+[gd_scene load_steps=10 format=3 uid="uid://dyymsm0hk66id"]
 
 [ext_resource type="PackedScene" uid="uid://b1fp8ne5arj43" path="res://biome3d.tscn" id="1_jr480"]
 [ext_resource type="Script" path="res://addons/freecam_3D/freecam.gd" id="2_505s6"]
+[ext_resource type="Script" path="res://scripts/PlayerCar/CollisionArea.gd" id="3_0vpvq"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_t4cm1"]
+radius = 2243.0
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8gs71"]
 
@@ -28,16 +32,24 @@ radius = 10.0384
 player = NodePath("../Freecam3D")
 
 [node name="Freecam3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1736, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1145, 547, 0)
 script = ExtResource("2_505s6")
 overlay_text = false
+
+[node name="Area3D" type="Area3D" parent="Freecam3D"]
+collision_layer = 0
+collision_mask = 8
+input_ray_pickable = false
+script = ExtResource("3_0vpvq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Freecam3D/Area3D"]
+shape = SubResource("SphereShape3D_t4cm1")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_ngraw")
 
 [node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.341364, 0.660797, 0.668444, -0.910035, 0.0544204, 0.410943, 0.235173, -0.748589, 0.619926, 0, 167.872, 0)
-light_energy = 0.0
 shadow_enabled = true
 directional_shadow_split_2 = 0.507
 directional_shadow_blend_splits = true
