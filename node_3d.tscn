@@ -32,7 +32,7 @@ radius = 10.0384
 player = NodePath("../Freecam3D")
 
 [node name="Freecam3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1145, 547, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 547, 0)
 script = ExtResource("2_505s6")
 overlay_text = false
 

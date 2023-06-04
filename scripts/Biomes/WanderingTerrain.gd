@@ -18,6 +18,8 @@ var collidable_world_radius : float = 5
 var _cellular_height : Image
 var _simplex_height : Image
 
+
+
 func _ready():
 	
 	await _simplex3dNoise.changed && _cellular2dNoise.changed 
@@ -27,16 +29,36 @@ func _ready():
 	
 	timer.connect("timeout", snap)
 	snap()
-	
+
+
+
+func spiral(pos : Vector2):
+	if(abs(pos.x) <= abs(pos.y) && (pos.x != pos.y || pos.x >= 0)):
+		pos.x += 1 if (pos.y >= 0) else -1
+	else:
+		pos.y += -1 if (pos.x >= 0) else 1
+	return pos
+
+
 func initialize_collisions():
 	
 	_cellular_height = _cellular2dNoise.get_image()
 	_simplex_height = _simplex3dNoise.get_image()
 	
-	var first = TerrainChunkCollision.new(CalculateHeight)
-	_cellular_height.resize(_cellular_height.get_width() / first.collisoin_decimation + 1, _cellular_height.get_height() / first.collisoin_decimation + 1,)
-	_simplex_height.resize(_simplex_height.get_width() / first.collisoin_decimation + 1, _simplex_height.get_height() / first.collisoin_decimation + 1,)
-	chunks.add_child(first)
+	
+	_cellular_height.resize(_cellular_height.get_width() / 2 + 1, _cellular_height.get_height() / 2 + 1,)
+	_simplex_height.resize(_simplex_height.get_width() / 2 + 1, _simplex_height.get_height() / 2 + 1,)
+	
+	
+	var pos : Vector2
+	for i in collidable_world_radius*2:
+		var chunk = TerrainChunkCollision.new(CalculateHeight)
+		chunks.add_child(chunk)
+		chunk.global_position = Vector3(pos.x, 0, pos.y) * div
+		chunk.offset = pos
+		pos = spiral(pos)
+	
+	
 	
 func snap():
 	
@@ -47,7 +69,8 @@ func snap():
 	
 	timer.start()
 
-func CalculateHeight(uv : Vector2) -> float:
+func CalculateHeight(uv : Vector2, offset : Vector2) -> float:
+	var new_uv = Vector2(fposmod(uv.x - offset.x / div, _cellular_height.get_width()), fposmod(uv.y - offset.y / div,_cellular_height.get_height()))
 	var SimplexNoise = _simplex_height.get_pixelv(uv).r * _simplex_height.get_height();
 	var simplexed_uv = lerp(uv, Vector2(SimplexNoise, SimplexNoise), .1);
 	var DunesWorleyNoise = _cellular_height.get_pixelv(simplexed_uv).r * Height_Dune * 2;
