@@ -16,4 +16,4 @@ func _process(delta):
 				chunk.get_parent().disable()
 				
 		if(is_instance_valid(current_chunk)):
-			current_chunk.create_collision()
+			current_chunk.enable()

@@ -46,8 +46,8 @@ func initialize_collisions():
 	_simplex_height = _simplex3dNoise.get_image()
 	
 	
-	_cellular_height.resize(_cellular_height.get_width() / 2 + 1, _cellular_height.get_height() / 2 + 1,)
-	_simplex_height.resize(_simplex_height.get_width() / 2 + 1, _simplex_height.get_height() / 2 + 1,)
+	_cellular_height.resize(_cellular_height.get_width() / 2 + 1, _cellular_height.get_height() / 2 + 1)
+	_simplex_height.resize(_simplex_height.get_width() / 2 + 1, _simplex_height.get_height() / 2 + 1)
 	
 	
 	var pos : Vector2
@@ -55,7 +55,8 @@ func initialize_collisions():
 		var chunk = TerrainChunkCollision.new(CalculateHeight)
 		chunks.add_child(chunk)
 		chunk.global_position = Vector3(pos.x, 0, pos.y) * div
-		chunk.offset = pos
+		chunk.pos = pos
+		chunk.create_collision()
 		pos = spiral(pos)
 	
 	
@@ -70,8 +71,9 @@ func snap():
 	timer.start()
 
 func CalculateHeight(uv : Vector2, offset : Vector2) -> float:
-	var new_uv = Vector2(fposmod(uv.x - offset.x / div, _cellular_height.get_width()), fposmod(uv.y - offset.y / div,_cellular_height.get_height()))
-	var SimplexNoise = _simplex_height.get_pixelv(uv).r * _simplex_height.get_height();
+	#this shit doesn't work again lmfao
+	var new_uv = Vector2(fposmod(uv.x - (offset.x/ div), _cellular_height.get_width()), fposmod(uv.y - (offset.y / div), _cellular_height.get_height()))
+	var SimplexNoise = _simplex_height.get_pixelv(new_uv).r * _simplex_height.get_height();
 	var simplexed_uv = lerp(uv, Vector2(SimplexNoise, SimplexNoise), .1);
 	var DunesWorleyNoise = _cellular_height.get_pixelv(simplexed_uv).r * Height_Dune * 2;
 	return DunesWorleyNoise

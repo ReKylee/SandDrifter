@@ -7,12 +7,15 @@ var CollisionArea := Area3D.new()
 var generated : bool = false
 var collisoin_decimation : int = 2
 var height_function : Callable
-var size_in_pixels : Vector2 = Vector2(512, 512)
-var offset : Vector2
+var size_in_pixels : Vector2 = Vector2(513, 513)
+@export var generate : bool = false :
+	set(value):
+		create_collision()
+		generate = false
+var pos : Vector2
 
 func _init(f : Callable):
 	height_function = f
-	
 	
 	
 	var area_col = CollisionShape3D.new()
@@ -26,6 +29,7 @@ func _init(f : Callable):
 	
 	add_child(CollisionShape)
 	add_child(CollisionArea)
+	disable()
 	
 func disable():
 	CollisionShape.disabled = true
@@ -35,7 +39,6 @@ func is_disabled():
 	return CollisionShape.disabled
 func create_collision():
 	if(generated):
-		enable()
 		return
 	CollisionShape.rotation_degrees.y = 180
 	CollisionShape.position = Vector3(-0.5, 0, -0.5)
@@ -50,7 +53,7 @@ func create_collision():
 	shap.map_width = size_in_pixels.x / collisoin_decimation + 1
 	for y in shap.map_depth:
 		for x in shap.map_width:
-			float_array.push_back( height_function.bind(Vector2(x, y), offset).call() )
+			float_array.push_back( height_function.bind(Vector2(x, y), pos).call() )
 	
 	CollisionShape.shape.map_data = float_array
 	
