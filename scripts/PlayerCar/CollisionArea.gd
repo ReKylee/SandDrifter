@@ -17,3 +17,4 @@ func _process(delta):
 				
 		if(is_instance_valid(current_chunk)):
 			current_chunk.enable()
+			#print(current_chunk.global_position)

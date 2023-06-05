@@ -10,8 +10,11 @@ var height_function : Callable
 var size_in_pixels : Vector2 = Vector2(513, 513)
 @export var generate : bool = false :
 	set(value):
+		generated = false
 		create_collision()
 		generate = false
+
+@export var off : Vector2
 var pos : Vector2
 
 func _init(f : Callable):
@@ -53,7 +56,7 @@ func create_collision():
 	shap.map_width = size_in_pixels.x / collisoin_decimation + 1
 	for y in shap.map_depth:
 		for x in shap.map_width:
-			float_array.push_back( height_function.bind(Vector2(x, y), pos).call() )
+			float_array.push_back( height_function.bind(Vector2(x, y), pos + off).call() )
 	
 	CollisionShape.shape.map_data = float_array
 	
