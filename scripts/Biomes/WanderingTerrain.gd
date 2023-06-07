@@ -57,15 +57,15 @@ func initialize_collisions():
 func snap():
 	
 	player_pos = player.global_position.snapped(Vector3(snap_step, 0, snap_step))
-	#terrain.global_position.x = player_pos.x
-	#terrain.global_position.z = player_pos.z
-	#terrain.get_surface_override_material(0).set("shader_parameter/uv_offset", -Vector2(player_pos.x / div, player_pos.z / div))
+	terrain.global_position.x = player_pos.x
+	terrain.global_position.z = player_pos.z
+	terrain.get_surface_override_material(0).set("shader_parameter/uv_offset", -Vector2(player_pos.x / div, player_pos.z / div))
 	
 	timer.start()
 
 func CalculateHeight(uv : Vector2, offset : Vector2) -> float:
 	#UV is pixel coords on texture
-	uv += offset
+	uv -= offset
 	var new_uv = Vector2(fposmod(uv.x, _simplex_height.get_width()), fposmod(uv.y, _simplex_height.get_width()))
 	var SimplexNoise = _simplex_height.get_pixelv(new_uv).r * _simplex_height.get_width();
 	var simplexed_uv = lerp(new_uv, Vector2(SimplexNoise, SimplexNoise), .1);

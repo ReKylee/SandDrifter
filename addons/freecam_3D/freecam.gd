@@ -23,7 +23,7 @@ class_name Freecam3D
 ## Container for the chat-like event log.
 @onready var event_log := VBoxContainer.new()
 
-const MAX_SPEED := 4
+const MAX_SPEED := 10
 const MIN_SPEED := 0.1
 const ACCELERATION := 0.1
 const MOUSE_SENSITIVITY := 0.002
