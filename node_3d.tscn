@@ -1,11 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://dyymsm0hk66id"]
+[gd_scene load_steps=8 format=3 uid="uid://dyymsm0hk66id"]
 
 [ext_resource type="PackedScene" uid="uid://b1fp8ne5arj43" path="res://biome3d.tscn" id="1_jr480"]
-[ext_resource type="Script" path="res://addons/freecam_3D/freecam.gd" id="2_505s6"]
+[ext_resource type="PackedScene" uid="uid://ci52bv1m15cbs" path="res://cars/YellowCar.tscn" id="2_0j58n"]
 [ext_resource type="Script" path="res://scripts/PlayerCar/CollisionArea.gd" id="3_0vpvq"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_t4cm1"]
-radius = 2243.0
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8gs71"]
 
@@ -21,29 +18,13 @@ reflected_light_source = 2
 ssil_radius = 6.62
 ssil_normal_rejection = 0.94
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_8vsf7"]
-radius = 10.0384
-
-[sub_resource type="SphereMesh" id="SphereMesh_ucf2j"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_o2xto"]
+radius = 526.647
 
 [node name="Node3D" type="Node3D"]
 
 [node name="ClipPlane" parent="." node_paths=PackedStringArray("player") instance=ExtResource("1_jr480")]
-player = NodePath("../Freecam3D")
-
-[node name="Freecam3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 547, 0)
-script = ExtResource("2_505s6")
-overlay_text = false
-
-[node name="Area3D" type="Area3D" parent="Freecam3D"]
-collision_layer = 0
-collision_mask = 8
-input_ray_pickable = false
-script = ExtResource("3_0vpvq")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Freecam3D/Area3D"]
-shape = SubResource("SphereShape3D_t4cm1")
+player = NodePath("../car")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_ngraw")
@@ -54,14 +35,14 @@ shadow_enabled = true
 directional_shadow_split_2 = 0.507
 directional_shadow_blend_splits = true
 
-[node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 451.251, 0)
-mass = 10.0
-gravity_scale = 5.0
+[node name="car" parent="." instance=ExtResource("2_0j58n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 82.1605, 0)
+collision_layer = 2
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-shape = SubResource("SphereShape3D_8vsf7")
+[node name="Area3D" type="Area3D" parent="car"]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("3_0vpvq")
 
-[node name="CSGMesh3D" type="CSGMesh3D" parent="RigidBody3D"]
-transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0)
-mesh = SubResource("SphereMesh_ucf2j")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="car/Area3D"]
+shape = SubResource("SphereShape3D_o2xto")

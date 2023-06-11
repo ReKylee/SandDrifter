@@ -122,6 +122,8 @@ Handbrake={
 
 [layer_names]
 
+3d_physics/layer_1="Ground"
+3d_physics/layer_2="Player"
 3d_physics/layer_4="Chunks"
 
 [physics]

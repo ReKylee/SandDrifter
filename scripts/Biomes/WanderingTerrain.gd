@@ -45,7 +45,7 @@ func initialize_collisions():
 	_simplex_height.resize(_simplex_height.get_width() / collision_decimation + 1, _simplex_height.get_height() / collision_decimation + 1)
 	
 	var pos : Vector2
-	for i in collidable_world_radius*2:
+	for i in collidable_world_radius*4:
 		var chunk = TerrainChunkCollision.new(CalculateHeight)
 		chunks.add_child(chunk)
 		chunk.global_position = Vector3(pos.x, 0, pos.y) * div

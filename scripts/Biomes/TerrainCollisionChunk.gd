@@ -4,7 +4,6 @@ class_name TerrainChunkCollision
 
 var CollisionShape := CollisionShape3D.new()
 var CollisionArea := Area3D.new()
-var Sprite := Sprite3D.new()
 
 var generated : bool = false
 var height_function : Callable
@@ -18,15 +17,10 @@ var size_in_pixels : Vector2 = Vector2(512, 512)
 		generate = false
 
 var pos : Vector2
-var img : Image 
 
 func _init(f : Callable):
 	height_function = f
-	
-	Sprite.axis = Vector3.AXIS_Y
-	Sprite.pixel_size = 1
-	Sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
-	Sprite.rotation_degrees.y = 180
+
 	var area_col = CollisionShape3D.new()
 	area_col.shape = SphereShape3D.new()
 	area_col.shape.radius = 3
@@ -36,9 +30,12 @@ func _init(f : Callable):
 	CollisionArea.set_collision_layer_value(1, false)
 	CollisionArea.set_collision_layer_value(4, true)
 	
+	set_collision_layer_value(1, true)
+	set_collision_mask_value(2, true)
+	
 	add_child(CollisionShape)
 	add_child(CollisionArea)
-	add_child(Sprite)
+
 	disable()
 	
 func disable():
@@ -62,16 +59,13 @@ func create_collision():
 	CollisionShape.shape = shap
 	shap.map_depth = size_in_pixels.y / collisoin_decimation + 1
 	shap.map_width = size_in_pixels.x / collisoin_decimation + 1
-	img = Image.create(shap.map_depth, shap.map_width, true, Image.FORMAT_RGBA8)
+	
 	for y in shap.map_depth:
 		for x in shap.map_width:
 			var h = height_function.bind(Vector2(x, y), pos).call()
 			float_array.push_back( h )
-			if(x < shap.map_width-1 && y < shap.map_depth-1):
-				img.set_pixel(x, y, Color(h/400, h/400, h/400, 1))
 	CollisionShape.shape.map_data = float_array
 	
-	Sprite.texture = ImageTexture.create_from_image(img)
 	generated = true
 
 
