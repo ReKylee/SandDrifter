@@ -38,10 +38,12 @@ func spiral(pos : Vector2):
 
 
 func initialize_collisions():
-
-	_cellular_height.resize(_cellular_height.get_width() / 2 + 1, _cellular_height.get_height() / 2 + 1)
-	_simplex_height.resize(_simplex_height.get_width() / 2 + 1, _simplex_height.get_height() / 2 + 1)
 	
+	_cellular_height.flip_y()
+	_simplex_height.flip_y()
+	
+	_cellular_height.resize(_cellular_height.get_width() / 2, _cellular_height.get_height() / 2)
+	_simplex_height.resize(_simplex_height.get_width() / 2, _simplex_height.get_height() / 2)
 	
 	var pos : Vector2
 	for i in collidable_world_radius*2:
@@ -50,8 +52,8 @@ func initialize_collisions():
 		chunk.global_position = Vector3(pos.x, 0, pos.y) * div
 		chunk.pos = pos
 		chunk.create_collision()
+		chunk.show()
 		pos = spiral(pos)
-	
 	
 	
 func snap():
@@ -64,10 +66,10 @@ func snap():
 	timer.start()
 
 func CalculateHeight(uv : Vector2, offset : Vector2) -> float:
-	#UV is pixel coords on texture
+	
 	uv -= offset
 	var new_uv = Vector2(fposmod(uv.x, _simplex_height.get_width()), fposmod(uv.y, _simplex_height.get_width()))
 	var SimplexNoise = _simplex_height.get_pixelv(new_uv).r * _simplex_height.get_width();
-	var simplexed_uv = lerp(new_uv, Vector2(SimplexNoise, SimplexNoise), .1);
+	var simplexed_uv = lerp(uv, Vector2(SimplexNoise, SimplexNoise), .1);
 	var DunesWorleyNoise = _cellular_height.get_pixelv(simplexed_uv).r * Height_Dune * 2;
 	return DunesWorleyNoise

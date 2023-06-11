@@ -37,7 +37,7 @@ float overlay(float a, float b) {
 }
 
 float CalculateHeight(vec2 uv) {
-	float SimplexNoise = textureLod(_simplex3dNoise, uv, 1).r;
+	float SimplexNoise = textureLod(_simplex3dNoise, uv, 0).r;
 	vec2 simplexed_uv = mix(uv, vec2(SimplexNoise, SimplexNoise), .1);
 	float DunesWorleyNoise = textureLod(_cellular2dNoise, simplexed_uv, 0).r * Height_Dune;
 	
