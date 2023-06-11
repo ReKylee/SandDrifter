@@ -10,7 +10,6 @@ script = ExtResource("1_3vf1i")
 [node name="CollisionChunks" type="Node3D" parent="."]
 
 [node name="Terrain" type="MeshInstance3D" parent="."]
-visible = false
 mesh = ExtResource("1_xtoab")
 skeleton = NodePath("../CollisionChunks")
 surface_material_override/0 = ExtResource("1_pnckx")

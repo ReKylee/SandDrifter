@@ -16,7 +16,7 @@ var player_pos : Vector3
 var snap_step = 20
 var div = 2243
 var collidable_world_radius : float = 5
-
+var collision_decimation : float = 2
 
 func _ready():
 	
@@ -39,11 +39,10 @@ func spiral(pos : Vector2):
 
 func initialize_collisions():
 	
-	_cellular_height.flip_y()
-	_simplex_height.flip_y()
+
 	
-	_cellular_height.resize(_cellular_height.get_width() / 2, _cellular_height.get_height() / 2)
-	_simplex_height.resize(_simplex_height.get_width() / 2, _simplex_height.get_height() / 2)
+	_cellular_height.resize(_cellular_height.get_width() / collision_decimation + 1, _cellular_height.get_height() / collision_decimation + 1)
+	_simplex_height.resize(_simplex_height.get_width() / collision_decimation + 1, _simplex_height.get_height() / collision_decimation + 1)
 	
 	var pos : Vector2
 	for i in collidable_world_radius*2:
@@ -51,6 +50,7 @@ func initialize_collisions():
 		chunks.add_child(chunk)
 		chunk.global_position = Vector3(pos.x, 0, pos.y) * div
 		chunk.pos = pos
+		chunk.collisoin_decimation = collision_decimation
 		chunk.create_collision()
 		chunk.show()
 		pos = spiral(pos)
@@ -67,9 +67,12 @@ func snap():
 
 func CalculateHeight(uv : Vector2, offset : Vector2) -> float:
 	
-	uv -= offset
-	var new_uv = Vector2(fposmod(uv.x, _simplex_height.get_width()), fposmod(uv.y, _simplex_height.get_width()))
-	var SimplexNoise = _simplex_height.get_pixelv(new_uv).r * _simplex_height.get_width();
-	var simplexed_uv = lerp(uv, Vector2(SimplexNoise, SimplexNoise), .1);
+	var SimplexNoise = _simplex_height.get_pixelv(uv).r * _simplex_height.get_width();
+	var amountx = smoothstep(0, 1, sin(uv.x * PI/_cellular_height.get_height())*.1)
+	var amounty = smoothstep(0, 1, sin(uv.y * PI/_cellular_height.get_height())*.1)
+	var simplexed_uv_x = lerp(uv.x, SimplexNoise, amountx)
+	var simplexed_uv_y = lerp(uv.y, SimplexNoise, amounty)
+	var simplexed_uv = Vector2(simplexed_uv_x, simplexed_uv_y)
+	
 	var DunesWorleyNoise = _cellular_height.get_pixelv(simplexed_uv).r * Height_Dune * 2;
 	return DunesWorleyNoise
