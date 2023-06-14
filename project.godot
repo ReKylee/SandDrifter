@@ -38,7 +38,7 @@ window/stretch/mode="viewport"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/BurstParticles2D/plugin.cfg", "res://addons/QuickPluginManager/plugin.cfg", "res://addons/compass/plugin.cfg", "res://addons/dynamic_day_night_cycles/plugin.cfg", "res://addons/extra_export_hints/plugin.cfg", "res://addons/radial_menu/plugin.cfg", "res://addons/softbody2d/plugin.cfg", "res://addons/trail_2d/plugin.cfg", "res://addons/vizpath/plugin.cfg", "res://addons/PaletteTools/plugin.cfg", "res://addons/debug_menu/plugin.cfg", "res://addons/sprite_painter/plugin.cfg", "res://addons/AsepriteWizard/plugin.cfg", "res://addons/Rotor Node/plugin.cfg", "res://addons/easy_velocity_vector_display/plugin.cfg", "res://addons/freecam_3D/plugin.cfg", "res://addons/draw3d/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/goutte.camera.trackball/plugin.cfg")
+enabled=PackedStringArray("res://addons/BurstParticles2D/plugin.cfg", "res://addons/QuickPluginManager/plugin.cfg", "res://addons/compass/plugin.cfg", "res://addons/dynamic_day_night_cycles/plugin.cfg", "res://addons/extra_export_hints/plugin.cfg", "res://addons/radial_menu/plugin.cfg", "res://addons/softbody2d/plugin.cfg", "res://addons/trail_2d/plugin.cfg", "res://addons/vizpath/plugin.cfg", "res://addons/PaletteTools/plugin.cfg", "res://addons/debug_menu/plugin.cfg", "res://addons/sprite_painter/plugin.cfg", "res://addons/AsepriteWizard/plugin.cfg", "res://addons/Rotor Node/plugin.cfg", "res://addons/easy_velocity_vector_display/plugin.cfg", "res://addons/freecam_3D/plugin.cfg", "res://addons/draw3d/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
 [importer_defaults]
 

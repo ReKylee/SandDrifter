@@ -198,10 +198,10 @@ update_rotation = false
 update_scale = false
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 0.707128, 0.707085, 0, -0.707086, 0.707128, 0, 139.026, 75)
+transform = Transform3D(1, 0, 0, 0, 0.707128, 0.707086, 0, -0.707086, 0.707127, 0, 139.026, 75)
 projection = 1
 current = true
-size = 64.0
+size = 32.0
 
 [node name="PostProcessingQuad" type="MeshInstance3D" parent="Player/Camera3D"]
 transform = Transform3D(0.999997, 0, 0, 0, 0.999999, 0, 0, 0, 0.999998, 0, 0, 0)

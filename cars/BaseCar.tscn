@@ -58,9 +58,6 @@ suspension_max_force = 10000.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.689432, -0.062412)
 shape = SubResource("BoxShape3D_mm2gk")
 
-[node name="look" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2149, 0)
-
 [node name="Hud" type="CanvasLayer" parent="."]
 layer = 2
 
