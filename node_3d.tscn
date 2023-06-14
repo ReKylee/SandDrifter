@@ -1,8 +1,124 @@
-[gd_scene load_steps=8 format=3 uid="uid://dyymsm0hk66id"]
+[gd_scene load_steps=19 format=3 uid="uid://dyymsm0hk66id"]
 
 [ext_resource type="PackedScene" uid="uid://b1fp8ne5arj43" path="res://biome3d.tscn" id="1_jr480"]
+[ext_resource type="Script" path="res://addons/freecam_3D/freecam.gd" id="1_ot6jd"]
+[ext_resource type="Script" path="res://smoother.gd" id="1_x0ls7"]
 [ext_resource type="PackedScene" uid="uid://ci52bv1m15cbs" path="res://cars/YellowCar.tscn" id="2_0j58n"]
 [ext_resource type="Script" path="res://scripts/PlayerCar/CollisionArea.gd" id="3_0vpvq"]
+[ext_resource type="Shader" path="res://Resources/PostProcessing/Pixel.gdshader" id="3_03rrb"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_w7i16"]
+[ext_resource type="Script" path="res://scripts/Cameras/CamBase.gd" id="7_ljacy"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="8_qkuul"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_o2xto"]
+radius = 1257.94
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1gm62"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_x2ibr"]
+material = SubResource("ShaderMaterial_1gm62")
+flip_faces = true
+size = Vector2(2, 2)
+
+[sub_resource type="Shader" id="Shader_1gwcc"]
+resource_local_to_scene = true
+code = "shader_type spatial;
+render_mode blend_mix;
+
+uniform float pixels : hint_range(10,100);
+uniform sampler2D colorramp;
+uniform bool should_dither = true;
+
+uniform float seed: hint_range(1, 10);
+uniform float size = 50.0;
+uniform int OCTAVES : hint_range(0, 20, 1);
+uniform float TILES : hint_range(0, 20, 1);
+
+float rand(vec2 co) {
+	co = mod(co, vec2(1.0,1.0)*round(size));
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 15.5453 * seed);
+}
+
+
+
+float noise(vec2 coord){
+	vec2 i = floor(coord);
+	vec2 f = fract(coord);
+		
+	float a = rand(i);
+	float b = rand(i + vec2(1.0, 0.0));
+	float c = rand(i + vec2(0.0, 1.0));
+	float d = rand(i + vec2(1.0, 1.0));
+
+	vec2 cubic = f * f * (3.0 - 2.0 * f);
+
+	return mix(a, b, cubic.x) + (c - a) * cubic.y * (1.0 - cubic.x) + (d - b) * cubic.x * cubic.y;
+}
+
+vec2 Hash2(vec2 p) {
+	float r = 523.0*sin(dot(p, vec2(53.3158, 43.6143)));
+	return vec2(fract(15.32354 * r), fract(17.25865 * r));
+	
+}
+
+// Tileable cell noise by Dave_Hoskins from shadertoy: https://www.shadertoy.com/view/4djGRh
+float Cells(in vec2 p, in float numCells) {
+	p *= numCells;
+	float d = 1.0e10;
+	for (int xo = -1; xo <= 1; xo++)
+	{
+		for (int yo = -1; yo <= 1; yo++)
+		{
+			vec2 tp = floor(p) + vec2(float(xo), float(yo));
+			tp = p - tp - Hash2(mod(tp, numCells / TILES));
+			d = min(d, dot(tp, tp));
+		}
+	}
+	return sqrt(d);
+}
+
+bool dither(vec2 uv1, vec2 uv2) {
+	return mod(uv1.x+uv2.y,2.0/pixels) <= 1.0 / pixels;
+}
+
+
+void fragment() {
+	// pixelize uv
+	vec2 pixelized = floor(UV*pixels)/pixels;
+	
+	// use dither val later to mix between colors
+	bool dith = dither(UV, pixelized);
+	
+
+	// use two different sized cells for some variation
+	float n = Cells(pixelized - vec2(2.0, 0), 10);
+	n *= Cells(pixelized - vec2(1.0, 0), 20);
+
+	
+	// adjust cell value to get better looking stuff
+	n*= 2.;
+	n = clamp(n, 0.0, 1.0);
+	if (dith || !should_dither) { // here we dither
+		n *= 1.3;
+	}
+	
+	// constrain values 4 possibilities and then choose color based on those
+	float interpolate = floor(n * 15.0) / 15.0;
+	vec4 col = texture(colorramp, vec2(interpolate, 0.0));
+	
+	ALBEDO = col.rgb;
+	ALPHA = col.a;
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5nps8"]
+render_priority = 0
+shader = SubResource("Shader_1gwcc")
+shader_parameter/pixels = null
+shader_parameter/should_dither = true
+shader_parameter/seed = null
+shader_parameter/size = 50.0
+shader_parameter/OCTAVES = null
+shader_parameter/TILES = null
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8gs71"]
 
@@ -18,31 +134,105 @@ reflected_light_source = 2
 ssil_radius = 6.62
 ssil_normal_rejection = 0.94
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_o2xto"]
-radius = 526.647
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5yg2y"]
+render_priority = 0
+shader = ExtResource("3_03rrb")
+shader_parameter/shadows_enabled = false
+shader_parameter/highlights_enabled = true
+shader_parameter/shadow_strength = 0.4
+shader_parameter/highlight_strength = 0.1
+shader_parameter/highlight_color = Color(0.752941, 0.819608, 0.8, 1)
+shader_parameter/shadow_color = Color(0.0901961, 0.054902, 0.0980392, 1)
 
 [node name="Node3D" type="Node3D"]
 
-[node name="ClipPlane" parent="." node_paths=PackedStringArray("player") instance=ExtResource("1_jr480")]
-player = NodePath("../car")
+[node name="Smoother" type="Node" parent="."]
+script = ExtResource("1_x0ls7")
+
+[node name="Freecam3D" type="Camera3D" parent="."]
+visible = false
+current = true
+script = ExtResource("1_ot6jd")
+overlay_text = false
+
+[node name="Area3D" type="Area3D" parent="Freecam3D"]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("3_0vpvq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Freecam3D/Area3D"]
+shape = SubResource("SphereShape3D_o2xto")
+
+[node name="PostProcessingQuad" type="MeshInstance3D" parent="Freecam3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 2.23517e-08, 0, -2.23517e-08, 1, 0, 0, 0)
+visible = false
+extra_cull_margin = 16384.0
+mesh = SubResource("QuadMesh_x2ibr")
+surface_material_override/0 = SubResource("ShaderMaterial_5nps8")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_ngraw")
 
 [node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.341364, 0.660797, 0.668444, -0.910035, 0.0544204, 0.410943, 0.235173, -0.748589, 0.619926, 0, 167.872, 0)
+transform = Transform3D(0.77352, 0.357788, 0.523121, -0.473122, -0.223209, 0.852252, 0.42169, -0.906734, -0.00337891, 0, 101.335, 0)
 shadow_enabled = true
-directional_shadow_split_2 = 0.507
 directional_shadow_blend_splits = true
 
-[node name="car" parent="." instance=ExtResource("2_0j58n")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 82.1605, 0)
+[node name="Player" type="Node" parent="."]
+
+[node name="car" parent="Player" instance=ExtResource("2_0j58n")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64.026, 0)
 collision_layer = 2
 
-[node name="Area3D" type="Area3D" parent="car"]
+[node name="Area3D" type="Area3D" parent="Player/car"]
 collision_layer = 0
 collision_mask = 8
 script = ExtResource("3_0vpvq")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="car/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/car/Area3D"]
 shape = SubResource("SphereShape3D_o2xto")
+
+[node name="RemoteTransform3D" type="RemoteTransform3D" parent="Player/car"]
+remote_path = NodePath("../../CamBase")
+update_rotation = false
+update_scale = false
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 0.707128, 0.707085, 0, -0.707086, 0.707128, 0, 139.026, 75)
+projection = 1
+current = true
+size = 64.0
+
+[node name="PostProcessingQuad" type="MeshInstance3D" parent="Player/Camera3D"]
+transform = Transform3D(0.999997, 0, 0, 0, 0.999999, 0, 0, 0, 0.999998, 0, 0, 0)
+extra_cull_margin = 16384.0
+mesh = SubResource("QuadMesh_x2ibr")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("ShaderMaterial_5yg2y")
+
+[node name="PhantomCameraHost" type="Node" parent="Player/Camera3D"]
+script = ExtResource("3_w7i16")
+
+[node name="CamBase" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64.026, 0)
+script = ExtResource("7_ljacy")
+zoom_minimum = 32.0
+zoom_maximum = 64.0
+zoom_in_dampening = 15.0
+
+[node name="PhantomCamera3D" type="Node3D" parent="Player/CamBase"]
+transform = Transform3D(0.999969, 0, 0, 0, 0.707109, 0.707086, 0, -0.707109, 0.707086, 0, 75, 75)
+script = ExtResource("8_qkuul")
+priority = 0
+follow_mode = 0
+look_at_mode = 2
+look_at_target = NodePath("../../car")
+look_at_parameters/look_at_target_offset = Vector3(0, 0, 0)
+tween_parameters = null
+tween_on_load = true
+inactive_update_mode = 0
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="ClipPlane" parent="Environment" node_paths=PackedStringArray("player") instance=ExtResource("1_jr480")]
+player = NodePath("../../Freecam3D")

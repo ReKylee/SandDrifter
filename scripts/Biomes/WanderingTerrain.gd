@@ -41,8 +41,8 @@ func initialize_collisions():
 	
 
 	
-	_cellular_height.resize(_cellular_height.get_width() / collision_decimation + 1, _cellular_height.get_height() / collision_decimation + 1)
-	_simplex_height.resize(_simplex_height.get_width() / collision_decimation + 1, _simplex_height.get_height() / collision_decimation + 1)
+	_cellular_height.resize(round(_cellular_height.get_width() / collision_decimation + 1), round(_cellular_height.get_height() / collision_decimation + 1))
+	_simplex_height.resize(round(_simplex_height.get_width() / collision_decimation + 1), round(_simplex_height.get_height() / collision_decimation + 1))
 	
 	var pos : Vector2
 	for i in collidable_world_radius*4:
@@ -65,14 +65,14 @@ func snap():
 	
 	timer.start()
 
-func CalculateHeight(uv : Vector2, offset : Vector2) -> float:
+func CalculateHeight(uv : Vector2, _offset : Vector2) -> float:
 	
-	var SimplexNoise = _simplex_height.get_pixelv(uv).r * _simplex_height.get_width();
-	var amountx = smoothstep(0, 1, sin(uv.x * PI/_cellular_height.get_height())*.1)
-	var amounty = smoothstep(0, 1, sin(uv.y * PI/_cellular_height.get_height())*.1)
+	var SimplexNoise : float = _simplex_height.get_pixelv(uv).r * float(_simplex_height.get_width());
+	var amountx : float = smoothstep(0.0, 1.0, sin(uv.x * PI/_cellular_height.get_width())*.1)
+	var amounty : float = smoothstep(0.0, 1.0, sin(uv.y * PI/_cellular_height.get_height())*.1)
 	var simplexed_uv_x = lerp(uv.x, SimplexNoise, amountx)
 	var simplexed_uv_y = lerp(uv.y, SimplexNoise, amounty)
-	var simplexed_uv = Vector2(simplexed_uv_x, simplexed_uv_y)
+	var simplexed_uv := Vector2(simplexed_uv_x, simplexed_uv_y)
 	
-	var DunesWorleyNoise = _cellular_height.get_pixelv(simplexed_uv).r * Height_Dune * 2;
+	var DunesWorleyNoise : float = _cellular_height.get_pixelv(simplexed_uv).r * float(Height_Dune * 2);
 	return DunesWorleyNoise

@@ -11,7 +11,7 @@ var collisoin_decimation : int = 2
 var size_in_pixels : Vector2 = Vector2(512, 512)
 
 @export var generate : bool = false :
-	set(value):
+	set(_value):
 		generated = false
 		create_collision()
 		generate = false
@@ -23,7 +23,7 @@ func _init(f : Callable):
 
 	var area_col = CollisionShape3D.new()
 	area_col.shape = SphereShape3D.new()
-	area_col.shape.radius = 3
+	area_col.shape.radius = 1000
 	CollisionArea.add_child(area_col)
 	
 	CollisionArea.collision_mask = 0
@@ -51,19 +51,19 @@ func create_collision():
 	CollisionShape.rotation_degrees.y = 180
 	var float_array : PackedFloat32Array = []
 	
-	scale.x = 2243/size_in_pixels.x * collisoin_decimation
-	scale.z = 2243/size_in_pixels.y * collisoin_decimation 
+	scale.x = float(2243/size_in_pixels.x) * collisoin_decimation
+	scale.z = float(2243/size_in_pixels.y) * collisoin_decimation
 	
 	
 	var shap = HeightMapShape3D.new()
 	CollisionShape.shape = shap
-	shap.map_depth = size_in_pixels.y / collisoin_decimation + 1
-	shap.map_width = size_in_pixels.x / collisoin_decimation + 1
+	shap.map_depth = ceil(size_in_pixels.y / collisoin_decimation + 1)
+	shap.map_width = ceil(size_in_pixels.x / collisoin_decimation + 1)
 	
 	for y in shap.map_depth:
 		for x in shap.map_width:
-			var h = height_function.bind(Vector2(x, y), pos).call()
-			float_array.push_back( h )
+			var h : float = height_function.bind(Vector2(x, y), pos).call()
+			float_array.push_back(h)
 	CollisionShape.shape.map_data = float_array
 	
 	generated = true

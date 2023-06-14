@@ -18,15 +18,15 @@ uniform vec3 _ShadowColor : source_color;
 uniform vec3 _TerrainRimColor : source_color;
 uniform vec3 _OceanSpecularColor : source_color;
 uniform vec3 _GlitterColor : source_color;
-uniform sampler2D _SandTex;
-uniform sampler2D _ShallowHorizontalTex;
-uniform sampler2D _ShallowVerticalTex;
-uniform sampler2D _SteepHorizontalTex;
-uniform sampler2D _SteepVerticalTex;
-uniform sampler2D _GlitterTex;
+uniform sampler2D _SandTex : hint_normal;
+uniform sampler2D _ShallowHorizontalTex : filter_nearest_mipmap;
+uniform sampler2D _ShallowVerticalTex: filter_nearest_mipmap;
+uniform sampler2D _SteepHorizontalTex: filter_nearest_mipmap;
+uniform sampler2D _SteepVerticalTex: filter_nearest_mipmap;
+uniform sampler2D _GlitterTex : filter_nearest_mipmap;
 uniform sampler2D _perlin2dNoiseFractal;
 uniform sampler2D _simplex3dNoise;
-uniform sampler2D _cellular2dNoise;
+uniform sampler2D _cellular2dNoise : filter_nearest_mipmap;
 
 float overlay(float a, float b) {
 	if(a < 0.5) {
