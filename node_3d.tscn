@@ -1,22 +1,20 @@
-[gd_scene load_steps=19 format=3 uid="uid://dyymsm0hk66id"]
+[gd_scene load_steps=20 format=3 uid="uid://dyymsm0hk66id"]
 
 [ext_resource type="PackedScene" uid="uid://b1fp8ne5arj43" path="res://biome3d.tscn" id="1_jr480"]
 [ext_resource type="Script" path="res://addons/freecam_3D/freecam.gd" id="1_ot6jd"]
 [ext_resource type="Script" path="res://smoother.gd" id="1_x0ls7"]
 [ext_resource type="PackedScene" uid="uid://ci52bv1m15cbs" path="res://cars/YellowCar.tscn" id="2_0j58n"]
 [ext_resource type="Script" path="res://scripts/PlayerCar/CollisionArea.gd" id="3_0vpvq"]
-[ext_resource type="Shader" path="res://Resources/PostProcessing/Pixel.gdshader" id="3_03rrb"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_w7i16"]
+[ext_resource type="Shader" path="res://Resources/PostProcessing/LimitColorPalette.gdshader" id="5_flm3b"]
+[ext_resource type="Texture2D" uid="uid://b5avggt8gg58k" path="res://Assets/fading-16-1x.png" id="6_8l8ga"]
 [ext_resource type="Script" path="res://scripts/Cameras/CamBase.gd" id="7_ljacy"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="8_qkuul"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_o2xto"]
 radius = 1257.94
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_1gm62"]
-
 [sub_resource type="QuadMesh" id="QuadMesh_x2ibr"]
-material = SubResource("ShaderMaterial_1gm62")
 flip_faces = true
 size = Vector2(2, 2)
 
@@ -120,29 +118,35 @@ shader_parameter/size = 50.0
 shader_parameter/OCTAVES = null
 shader_parameter/TILES = null
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8gs71"]
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gf1we"]
+sky_top_color = Color(0.396078, 0.45098, 0.54902, 1)
+sky_horizon_color = Color(0.627451, 0.72549, 0.729412, 1)
+ground_bottom_color = Color(0.376471, 0.231373, 0.227451, 1)
+ground_horizon_color = Color(0.627451, 0.72549, 0.729412, 1)
 
-[sub_resource type="Sky" id="Sky_3gucy"]
-sky_material = SubResource("ProceduralSkyMaterial_8gs71")
+[sub_resource type="Sky" id="Sky_rx5cl"]
+sky_material = SubResource("ProceduralSkyMaterial_gf1we")
 
-[sub_resource type="Environment" id="Environment_ngraw"]
+[sub_resource type="Environment" id="Environment_7n0pp"]
 background_mode = 2
-sky = SubResource("Sky_3gucy")
+sky = SubResource("Sky_rx5cl")
 ambient_light_source = 3
-ambient_light_sky_contribution = 0.05
-reflected_light_source = 2
-ssil_radius = 6.62
-ssil_normal_rejection = 0.94
+
+[sub_resource type="QuadMesh" id="QuadMesh_qgqtp"]
+flip_faces = true
+size = Vector2(2, 2)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5yg2y"]
 render_priority = 0
-shader = ExtResource("3_03rrb")
-shader_parameter/shadows_enabled = false
+shader = ExtResource("5_flm3b")
+shader_parameter/num_colors = 16
+shader_parameter/shadows_enabled = true
 shader_parameter/highlights_enabled = true
 shader_parameter/shadow_strength = 0.4
 shader_parameter/highlight_strength = 0.1
-shader_parameter/highlight_color = Color(0.752941, 0.819608, 0.8, 1)
-shader_parameter/shadow_color = Color(0.0901961, 0.054902, 0.0980392, 1)
+shader_parameter/highlight_color = Color(1, 1, 1, 1)
+shader_parameter/shadow_color = Color(0, 0, 0, 1)
+shader_parameter/PALETTE_TEXTURE = ExtResource("6_8l8ga")
 
 [node name="Node3D" type="Node3D"]
 
@@ -171,18 +175,20 @@ mesh = SubResource("QuadMesh_x2ibr")
 surface_material_override/0 = SubResource("ShaderMaterial_5nps8")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_ngraw")
+environment = SubResource("Environment_7n0pp")
 
 [node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.77352, 0.357788, 0.523121, -0.473122, -0.223209, 0.852252, 0.42169, -0.906734, -0.00337891, 0, 101.335, 0)
+transform = Transform3D(0.845678, 0.288943, 0.448711, -0.52831, 0.572359, 0.627132, -0.0756188, -0.767409, 0.636683, 0, 101.335, 0)
+light_energy = 2.0
 shadow_enabled = true
-directional_shadow_blend_splits = true
 
 [node name="Player" type="Node" parent="."]
 
 [node name="car" parent="Player" instance=ExtResource("2_0j58n")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64.026, 0)
 collision_layer = 2
+engine_force = 200.0
+engine_force_value = 200
 
 [node name="Area3D" type="Area3D" parent="Player/car"]
 collision_layer = 0
@@ -201,12 +207,14 @@ update_scale = false
 transform = Transform3D(1, 0, 0, 0, 0.707128, 0.707086, 0, -0.707086, 0.707127, 0, 139.026, 75)
 projection = 1
 current = true
-size = 32.0
+size = 128.0
 
 [node name="PostProcessingQuad" type="MeshInstance3D" parent="Player/Camera3D"]
 transform = Transform3D(0.999997, 0, 0, 0, 0.999999, 0, 0, 0, 0.999998, 0, 0, 0)
+cast_shadow = 0
 extra_cull_margin = 16384.0
-mesh = SubResource("QuadMesh_x2ibr")
+gi_mode = 0
+mesh = SubResource("QuadMesh_qgqtp")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("ShaderMaterial_5yg2y")
 
@@ -217,7 +225,7 @@ script = ExtResource("3_w7i16")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 64.026, 0)
 script = ExtResource("7_ljacy")
 zoom_minimum = 32.0
-zoom_maximum = 64.0
+zoom_maximum = 128.0
 zoom_in_dampening = 15.0
 
 [node name="PhantomCamera3D" type="Node3D" parent="Player/CamBase"]

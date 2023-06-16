@@ -3,28 +3,27 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b5avggt8gg58k"
-path.s3tc="res://.godot/imported/fading-16-1x.png-31b3e6ca175a86753f97051d11be9c60.s3tc.ctex"
+path="res://.godot/imported/fading-16-1x.png-31b3e6ca175a86753f97051d11be9c60.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://Assets/fading-16-1x.png"
-dest_files=["res://.godot/imported/fading-16-1x.png-31b3e6ca175a86753f97051d11be9c60.s3tc.ctex"]
+dest_files=["res://.godot/imported/fading-16-1x.png-31b3e6ca175a86753f97051d11be9c60.ctex"]
 
 [params]
 
-compress/mode=2
-compress/high_quality=false
+compress/mode=0
+compress/high_quality=true
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
-roughness/mode=0
+roughness/mode=1
 roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false
