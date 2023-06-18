@@ -78,7 +78,7 @@ damping_relaxation = 1.0
 transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_7mr0m")
 
-[node name="Sprite3D" type="Sprite3D" parent="." index="6"]
+[node name="Sprite3D" type="Sprite3D" parent="." index="5"]
 visible = false
 pixel_size = 0.0625
 billboard = 2
@@ -97,7 +97,7 @@ metadata/_aseprite_wizard_config_ = {
 "source": "res://Assets/ShipRotations.ase"
 }
 
-[node name="Imperial" type="Node3D" parent="." index="7"]
+[node name="Imperial" type="Node3D" parent="." index="6"]
 
 [node name="Imperial" type="MeshInstance3D" parent="Imperial" index="0"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)

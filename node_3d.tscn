@@ -146,6 +146,8 @@ shader_parameter/shadow_strength = 0.4
 shader_parameter/highlight_strength = 0.1
 shader_parameter/highlight_color = Color(1, 1, 1, 1)
 shader_parameter/shadow_color = Color(0, 0, 0, 1)
+shader_parameter/outline_width = 0.002
+shader_parameter/outline_color = Color(0.247059, 0.247059, 0.247059, 1)
 shader_parameter/PALETTE_TEXTURE = ExtResource("6_8l8ga")
 
 [node name="Node3D" type="Node3D"]
@@ -178,7 +180,7 @@ surface_material_override/0 = SubResource("ShaderMaterial_5nps8")
 environment = SubResource("Environment_7n0pp")
 
 [node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.845678, 0.288943, 0.448711, -0.52831, 0.572359, 0.627132, -0.0756188, -0.767409, 0.636683, 0, 101.335, 0)
+transform = Transform3D(1, 0, 0, 0, 0.857904, 0.513811, 0, -0.513811, 0.857904, 0, 101.335, 0)
 light_energy = 2.0
 shadow_enabled = true
 
@@ -204,7 +206,7 @@ update_rotation = false
 update_scale = false
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 0.707128, 0.707086, 0, -0.707086, 0.707127, 0, 139.026, 75)
+transform = Transform3D(1, -1.07868e-06, 1.07891e-06, 0, 0.707181, 0.707032, -1.52565e-06, -0.707033, 0.707181, 0.000114441, 139.026, 75.0113)
 projection = 1
 current = true
 size = 128.0
@@ -229,7 +231,7 @@ zoom_maximum = 128.0
 zoom_in_dampening = 15.0
 
 [node name="PhantomCamera3D" type="Node3D" parent="Player/CamBase"]
-transform = Transform3D(0.999969, 0, 0, 0, 0.707109, 0.707086, 0, -0.707109, 0.707086, 0, 75, 75)
+transform = Transform3D(0.999969, -1.07872e-06, 1.07885e-06, 0, 0.707162, 0.707033, -1.5256e-06, -0.707056, 0.707139, 0.000114441, 75, 75.0113)
 script = ExtResource("8_qkuul")
 priority = 0
 follow_mode = 0

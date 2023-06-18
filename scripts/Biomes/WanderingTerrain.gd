@@ -20,13 +20,10 @@ var collision_decimation : float = 2
 
 func _ready():
 	
-	
-	
 	initialize_collisions()
 	
 	timer.connect("timeout", snap)
 	snap()
-
 
 
 func spiral(pos : Vector2):
@@ -38,9 +35,7 @@ func spiral(pos : Vector2):
 
 
 func initialize_collisions():
-	
 
-	
 	_cellular_height.resize(round(_cellular_height.get_width() / collision_decimation + 1), round(_cellular_height.get_height() / collision_decimation + 1))
 	_simplex_height.resize(round(_simplex_height.get_width() / collision_decimation + 1), round(_simplex_height.get_height() / collision_decimation + 1))
 	

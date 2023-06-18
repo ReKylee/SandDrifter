@@ -16,7 +16,8 @@ uniform float shadow_strength : hint_range(0.0, 1.0, 0.01) = 0.4;
 uniform float highlight_strength : hint_range(0.0, 1.0, 0.01) = 0.1;
 uniform vec3 highlight_color : source_color = vec3(1.);
 uniform vec3 shadow_color : source_color = vec3(0.0);
-
+uniform float outline_width : hint_range(0.0, 0.1) = 0.01;
+uniform vec4 outline_color : source_color;
 varying mat4 model_view_matrix;
 
 vec3 palette_limiter (in vec3 albedo){
@@ -120,7 +121,9 @@ void fragment() {
 	}
 	
 	ALBEDO = final;
-
+	
+	
+	
 	float alpha_mask = depth_diff * float(shadows_enabled) + normal_diff * float(highlights_enabled);
 	ALPHA = clamp((alpha_mask) * 5., 0., 1.);
 }

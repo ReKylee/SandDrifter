@@ -5,9 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://dfiowbreq3ofj" path="res://Resources/SandShader/sand_shallow_vertical.jpg" id="3_ohm5k"]
 [ext_resource type="Texture2D" uid="uid://dkpmyc2wcpa0n" path="res://Resources/SandShader/sand_steep_horizontal.jpg" id="4_pv5h4"]
 [ext_resource type="Texture2D" uid="uid://bfd1jgcifyhdg" path="res://Resources/SandShader/sand_steep_vertical.jpg" id="5_mjws0"]
-[ext_resource type="Texture2D" uid="uid://dajabms5jerwx" path="res://Resources/SandShader/Dune_Celular2DNoise.tres" id="6_h4dro"]
-[ext_resource type="Texture2D" uid="uid://bl37r76c2d4ep" path="res://Resources/SandShader/Dune_Perlin2DdNoise.tres" id="7_7x0nh"]
-[ext_resource type="Texture2D" uid="uid://co1la5ng6mhee" path="res://Resources/SandShader/Dune_Simplex3DNoise.tres" id="8_ib1ea"]
+[ext_resource type="Texture2D" uid="uid://dajabms5jerwx" path="res://Resources/SandShader/Dune_Celular2DNoise.tres" id="6_bgxf3"]
+[ext_resource type="Texture2D" uid="uid://bl37r76c2d4ep" path="res://Resources/SandShader/Dune_Perlin2DdNoise.tres" id="7_p2wkx"]
+[ext_resource type="Texture2D" uid="uid://co1la5ng6mhee" path="res://Resources/SandShader/Dune_Simplex3DNoise.tres" id="8_q4rtl"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ceb70"]
 seed = 120
@@ -35,27 +35,27 @@ noise = SubResource("FastNoiseLite_qghax")
 render_priority = 0
 shader = ExtResource("1_64i8y")
 shader_parameter/uv_offset = Vector2(0, 0)
-shader_parameter/Height_Dune = 50.0
 shader_parameter/Height_Detail = 0.01
-shader_parameter/_SandStrength = 0.401
-shader_parameter/_TerrainRimPower = 5.992
-shader_parameter/_TerrainRimStrength = 0.168
-shader_parameter/_OceanSpecularPower = 2.0
-shader_parameter/_OceanSpecularStrength = 0.028
+shader_parameter/_OceanSpecularPower = 4.1
+shader_parameter/_OceanSpecularStrength = 0.155
+shader_parameter/_OceanSpecularColor = Color(0.627451, 0.72549, 0.729412, 1)
 shader_parameter/_GlitterThreshold = 0.2
+shader_parameter/_GlitterColor = Color(0.1656, 0.18, 0.17568, 1)
 shader_parameter/_SteepnessSharpnessPower = 1.0
 shader_parameter/_AlignmentSharpnessPower = 1.0
+shader_parameter/Height_Dune = 50.0
 shader_parameter/_TerrainColor = Color(0.631373, 0.623529, 0.486275, 1)
+shader_parameter/_SandStrength = 0.1
 shader_parameter/_ShadowColor = Color(0.376471, 0.231373, 0.227451, 1)
+shader_parameter/_TerrainRimPower = 5.992
+shader_parameter/_TerrainRimStrength = 0.168
 shader_parameter/_TerrainRimColor = Color(0.396078, 0.45098, 0.54902, 1)
-shader_parameter/_OceanSpecularColor = Color(0.627451, 0.72549, 0.729412, 1)
-shader_parameter/_GlitterColor = Color(0.1656, 0.18, 0.17568, 1)
+shader_parameter/_perlin2dNoiseFractal = ExtResource("7_p2wkx")
+shader_parameter/_simplex3dNoise = ExtResource("8_q4rtl")
+shader_parameter/_cellular2dNoise = ExtResource("6_bgxf3")
 shader_parameter/_SandTex = SubResource("NoiseTexture2D_fo22m")
+shader_parameter/_GlitterTex = SubResource("NoiseTexture2D_i3u62")
 shader_parameter/_ShallowHorizontalTex = ExtResource("2_1xnae")
 shader_parameter/_ShallowVerticalTex = ExtResource("3_ohm5k")
 shader_parameter/_SteepHorizontalTex = ExtResource("4_pv5h4")
 shader_parameter/_SteepVerticalTex = ExtResource("5_mjws0")
-shader_parameter/_GlitterTex = SubResource("NoiseTexture2D_i3u62")
-shader_parameter/_perlin2dNoiseFractal = ExtResource("7_7x0nh")
-shader_parameter/_simplex3dNoise = ExtResource("8_ib1ea")
-shader_parameter/_cellular2dNoise = ExtResource("6_h4dro")
