@@ -3,20 +3,19 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dkpmyc2wcpa0n"
-path.s3tc="res://.godot/imported/sand_steep_horizontal.jpg-c40d01ea0d51449f3907dcfa78acab04.s3tc.ctex"
+path="res://.godot/imported/sand_steep_horizontal.jpg-c40d01ea0d51449f3907dcfa78acab04.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 
 [deps]
 
 source_file="res://Resources/SandShader/sand_steep_horizontal.jpg"
-dest_files=["res://.godot/imported/sand_steep_horizontal.jpg-c40d01ea0d51449f3907dcfa78acab04.s3tc.ctex"]
+dest_files=["res://.godot/imported/sand_steep_horizontal.jpg-c40d01ea0d51449f3907dcfa78acab04.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1

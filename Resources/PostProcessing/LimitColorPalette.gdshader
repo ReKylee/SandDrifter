@@ -1,133 +1,78 @@
 shader_type spatial;
-render_mode unshaded, cull_disabled;
+render_mode unshaded, cull_front;
 
 const vec2 vertices[3] = {vec2(-1,-1), vec2(3,-1), vec2(-1, 3)};
-uniform int num_colors: hint_range(2,16) = 16;
-uniform sampler2D PALETTE_TEXTURE: hint_default_black, filter_nearest;
 
+uniform sampler2D u_dither_tex : filter_nearest;
+uniform sampler2D u_color_tex : filter_nearest;
 
-uniform sampler2D DEPTH_TEXTURE : hint_depth_texture, filter_linear_mipmap;
-uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
-uniform sampler2D NORMAL_TEXTURE : hint_normal_roughness_texture, filter_nearest;
+uniform int u_bit_depth;
+uniform float u_contrast;
+uniform float u_offset;
+uniform int u_dither_size;
 
-uniform bool shadows_enabled = true;
-uniform bool highlights_enabled = true;
-uniform float shadow_strength : hint_range(0.0, 1.0, 0.01) = 0.4;
-uniform float highlight_strength : hint_range(0.0, 1.0, 0.01) = 0.1;
-uniform vec3 highlight_color : source_color = vec3(1.);
-uniform vec3 shadow_color : source_color = vec3(0.0);
-uniform float outline_width : hint_range(0.0, 0.1) = 0.01;
-uniform vec4 outline_color : source_color;
-varying mat4 model_view_matrix;
+uniform sampler2D SCREEN_TEXTURE : hint_screen_texture;
 
-vec3 palette_limiter (in vec3 albedo){
-	float estimation_cutoff = 0.001;
-	vec3 closest_color;
-	float min_dist = 2.0;
-	float n = float(num_colors);
+void fragment() 
+{
+	// sample the screen texture at the desired output resolution (according to u_dither_size)
+	// this will effectively pixelate the resulting output
+	vec2 screen_size = vec2(textureSize(SCREEN_TEXTURE, 0)) / float(u_dither_size);
+	vec2 screen_sample_uv = floor(SCREEN_UV * screen_size) / screen_size;
+	vec3 screen_col = texture(SCREEN_TEXTURE, screen_sample_uv).rgb;
 	
-	for (int i=0; i<num_colors; i++ ){
-		float index = 1.000/(2.000*n)+float(i)/n;
-		vec3 index_color = texture(PALETTE_TEXTURE, vec2(index,0.5)).rgb;
-		float dist = length(index_color - albedo);
-		if (dist < min_dist) {
-			min_dist = dist;
-			closest_color = index_color;
-			if (min_dist < estimation_cutoff){
-				return closest_color;
-			}
-		}
-	}
-	return closest_color;
-}
-float getDepth(vec2 screen_uv, sampler2D depth_texture, mat4 inv_projection_matrix){
-//	Credit: https://godotshaders.com/shader/depth-modulated-pixel-outline-in-screen-space/
-	float raw_depth = texture(depth_texture, screen_uv)[0];
-	vec3 normalized_device_coordinates = vec3(screen_uv * 2.0 - 1.0, raw_depth);
-    vec4 view_space = inv_projection_matrix * vec4(normalized_device_coordinates, 1.0);	
-	view_space.xyz /= view_space.w;	
-	return -view_space.z;
-}
-
-vec3 getPos(float depth, mat4 mvm, mat4 ipm, vec2 suv, mat4 wm, mat4 icm){
-  vec4 pos = inverse(mvm) * ipm * vec4((suv * 2.0 - 1.0), depth * 2.0 - 1.0, 1.0);
-  pos.xyz /= (pos.w+0.0001*(1.-abs(sign(pos.w))));
-  return (pos*icm).xyz+wm[3].xyz;
-}
-
-float normalIndicator(vec3 normalEdgeBias, vec3 baseNormal, vec3 newNormal, float depth_diff){
-	// Credit: https://threejs.org/examples/webgl_postprocessing_pixel.html
-	float normalDiff = dot(baseNormal - newNormal, normalEdgeBias);
-	float normalIndicator = clamp(smoothstep(-.01, .01, normalDiff), 0.0, 1.0);
-	float depthIndicator = clamp(sign(depth_diff * .25 + .0025), 0.0, 1.0);
-	return (1.0 - dot(baseNormal, newNormal)) * depthIndicator * normalIndicator;
-}
-void fragment() {
-		vec2 e = vec2(1./VIEWPORT_SIZE.xy);
+	// calculate pixel luminosity (https://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color)
+	float lum = (screen_col.r * 0.299) + (screen_col.g * 0.587) + (screen_col.b * 0.114);
 	
-//	Shadows
-	float depth_diff = 0.0;
-	float neg_depth_diff = .5;
-	if (shadows_enabled) {
-		float depth = getDepth(SCREEN_UV, DEPTH_TEXTURE, INV_PROJECTION_MATRIX);
-		float du = getDepth(SCREEN_UV+vec2(0., -1.)*e, DEPTH_TEXTURE, INV_PROJECTION_MATRIX);
-		float dr = getDepth(SCREEN_UV+vec2(1., 0.)*e, DEPTH_TEXTURE, INV_PROJECTION_MATRIX);
-		float dd = getDepth(SCREEN_UV+vec2(0., 1.)*e, DEPTH_TEXTURE, INV_PROJECTION_MATRIX);
-		float dl = getDepth(SCREEN_UV+vec2(-1., 0.)*e, DEPTH_TEXTURE, INV_PROJECTION_MATRIX);
-		depth_diff += clamp(du - depth, 0., 1.);
-		depth_diff += clamp(dd - depth, 0., 1.);
-		depth_diff += clamp(dr - depth, 0., 1.);
-		depth_diff += clamp(dl - depth, 0., 1.);
-		neg_depth_diff += depth - du;
-		neg_depth_diff += depth - dd;
-		neg_depth_diff += depth - dr;
-		neg_depth_diff += depth - dl;
-		neg_depth_diff = clamp(neg_depth_diff, 0., 1.);
-		neg_depth_diff = clamp(smoothstep(0.5, 0.5, neg_depth_diff)*10., 0., 1.);
-		depth_diff = smoothstep(0.2, 0.3, depth_diff);
-//		ALBEDO = vec3(neg_depth_diff);
-	}
+	// adjust with contrast and offset parameters
+	float contrast = u_contrast;
+	lum = (lum - 0.5 + u_offset) * contrast + 0.5;
+	lum = clamp(lum, 0.0, 1.0);
 	
-//	Highlights
-	float normal_diff = 0.;
-	if (highlights_enabled) {
-		vec3 normal = texture(NORMAL_TEXTURE, SCREEN_UV).rgb * 2.0 - 1.0;
-		vec3 nu = texture(NORMAL_TEXTURE, SCREEN_UV+vec2(0., -1.)*e).rgb * 2.0 - 1.0;
-		vec3 nr = texture(NORMAL_TEXTURE, SCREEN_UV+vec2(1., 0.)*e).rgb * 2.0 - 1.0;
-		vec3 nd = texture(NORMAL_TEXTURE, SCREEN_UV+vec2(0., 1.)*e).rgb * 2.0 - 1.0;
-		vec3 nl = texture(NORMAL_TEXTURE, SCREEN_UV+vec2(-1., 0.)*e).rgb * 2.0 - 1.0;
-		vec3 normal_edge_bias = (vec3(1., 1., 1.));
-		normal_diff += normalIndicator(normal_edge_bias, normal, nu, depth_diff);
-		normal_diff += normalIndicator(normal_edge_bias, normal, nr, depth_diff);
-		normal_diff += normalIndicator(normal_edge_bias, normal, nd, depth_diff);
-		normal_diff += normalIndicator(normal_edge_bias, normal, nl, depth_diff);
-		normal_diff = smoothstep(0.2, 0.8, normal_diff);
-		normal_diff = clamp(normal_diff-neg_depth_diff, 0., 1.);
-//		ALBEDO = vec3(normal_diff);
-	}
+	// reduce luminosity bit depth to give a more banded visual if desired	
+	float bits = float(u_bit_depth);
+	lum = floor(lum * bits) / bits;
 	
-	vec3 original_color = palette_limiter(textureLod(SCREEN_TEXTURE, SCREEN_UV, 0.0).rgb);
-
-	vec3 final = original_color;
-	vec3 final_highlight_color = mix(original_color, highlight_color, highlight_strength);
-	vec3 final_shadow_color = mix(original_color, shadow_color, shadow_strength);
-
+	// to support multicolour palettes, we want to dither between the two colours on the palette
+	// which are adjacent to the current pixel luminosity.
+	// to do this, we need to determine which 'band' lum falls into, calculate the upper and lower
+	// bound of that band, then later we will use the dither texture to pick either the upper or 
+	// lower colour.
 	
-	if (highlights_enabled) {
-		final = mix(final, final_highlight_color, normal_diff);
-	}
-	if (shadows_enabled) {
-		final = mix(final, final_shadow_color, depth_diff);
-	}
+	// get the palette texture size mapped so it is 1px high (so the x value however many colour bands there are)
+	ivec2 col_size = textureSize(u_color_tex, 0);
+	col_size /= col_size.y;
 	
-	ALBEDO = final;
+	float col_x = float(col_size.x) - 1.0; // colour boundaries is 1 less than the number of colour bands
+	float col_texel_size = 1.0 / col_x; // the size of one colour boundary
 	
+	lum = max(lum - 0.00001, 0.0); // makes sure our floor calculation below behaves when lum == 1.0
+	float lum_lower = floor(lum * col_x) * col_texel_size;
+	float lum_upper = (floor(lum * col_x) + 1.0) * col_texel_size;
+	float lum_scaled = lum * col_x - floor(lum * col_x); // calculates where lum lies between the upper and lower bound
 	
+	// map the dither texture onto the screen. there are better ways of doing this that makes the dither pattern 'stick'
+	// with objects in the 3D world, instead of being mapped onto the screen. see lucas pope's details posts on how he 
+	// achieved this in Obra Dinn: https://forums.tigsource.com/index.php?topic=40832.msg1363742#msg1363742
+	ivec2 noise_size = textureSize(u_dither_tex, 0);
+	vec2 inv_noise_size = vec2(1.0 / float(noise_size.x), 1.0 / float(noise_size.y));
+	vec2 noise_uv = UV * inv_noise_size * vec2(float(screen_size.x), float(screen_size.y));
+	float threshold = texture(u_dither_tex, noise_uv).r;
 	
-	float alpha_mask = depth_diff * float(shadows_enabled) + normal_diff * float(highlights_enabled);
-	ALPHA = clamp((alpha_mask) * 5., 0., 1.);
+	// adjust the dither slightly so min and max aren't quite at 0.0 and 1.0
+	// otherwise we wouldn't get fullly dark and fully light dither patterns at lum 0.0 and 1.0
+	threshold = threshold * 0.99 + 0.005;
+	
+	// the lower lum_scaled is, the fewer pixels will be below the dither threshold, and thus will use the lower bound colour,
+	// and vice-versa
+	float ramp_val = lum_scaled < threshold ? 0.0f : 1.0f;
+	// sample at the lower bound colour if ramp_val is 0.0, upper bound colour if 1.0
+	float col_sample = mix(lum_lower, lum_upper, ramp_val);
+	vec3 final_col = texture(u_color_tex, vec2(col_sample, 0.5)).rgb;
+	
+	// return the final colour!
+	ALBEDO.rgb = final_col;
 }
 void vertex() {
     POSITION = vec4(vertices[VERTEX_ID],0.0,1.0);
-	model_view_matrix = VIEW_MATRIX * mat4(INV_VIEW_MATRIX[0], INV_VIEW_MATRIX[1], INV_VIEW_MATRIX[2], MODEL_MATRIX[3]);
 }

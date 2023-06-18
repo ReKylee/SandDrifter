@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode diffuse_lambert;
+render_mode diffuse_lambert, specular_toon;
 
 const vec2 TEXEL_SIZE = 1.0 / vec2(512.0);
 
@@ -30,12 +30,14 @@ uniform float _SteepnessSharpnessPower = 1.0;
 uniform float _AlignmentSharpnessPower = 1.0;
 
 group_uniforms NormalMaps;
-uniform sampler2D _SandTex : hint_normal;
-uniform sampler2D _GlitterTex : filter_nearest_mipmap;
-uniform sampler2D _ShallowHorizontalTex : filter_nearest_mipmap;
-uniform sampler2D _ShallowVerticalTex: filter_nearest_mipmap;
-uniform sampler2D _SteepHorizontalTex: filter_nearest_mipmap;
-uniform sampler2D _SteepVerticalTex: filter_nearest_mipmap;
+uniform bool useNormalMap = false;
+uniform sampler2D _BaseNormalMap : hint_normal, filter_nearest, repeat_enable;
+uniform sampler2D _SandTex : hint_normal, repeat_enable;
+uniform sampler2D _GlitterTex : hint_normal, repeat_enable;
+uniform sampler2D _ShallowHorizontalTex : hint_normal, repeat_enable;
+uniform sampler2D _ShallowVerticalTex: hint_normal, repeat_enable;
+uniform sampler2D _SteepHorizontalTex: hint_normal, repeat_enable;
+uniform sampler2D _SteepVerticalTex: hint_normal, repeat_enable;
 
 vec3 TransformMult(in mat4 mat, in vec3 vec) {
 	return (mat * vec4(vec, 1.0)).xyz;
@@ -68,21 +70,6 @@ float CalculateHeight(vec2 uv) {
 
 }
 
-
-
-vec3 calc_normal(vec2 uv) { 
-    const vec3 off = vec3(-1,0,1);
-
-	vec2 e = vec2(0.01, 0.0);
-
-    float left = CalculateHeight(uv + TEXEL_SIZE * off.xy);
-    float right = CalculateHeight(uv + TEXEL_SIZE * off.zy);
-    float top = CalculateHeight(uv + TEXEL_SIZE * off.yx);
-    float down = CalculateHeight(uv + TEXEL_SIZE * off.yz);
-
-    return normalize(vec3(left-right, 2.0, down-top));
-}
-
 vec3 nlerp(vec3 n1, vec3 n2, float t)
 {
     return normalize(mix(n1, n2, t));
@@ -93,6 +80,30 @@ vec3 UnpackNormal(vec3 rgb) {
 	n.z *= -1.0; 
 	return n; 
 }
+
+vec3 calc_normal(vec2 uv) { 
+	
+	if(useNormalMap) {
+		float SimplexNoise = textureLod(_simplex3dNoise, uv, 0).r;
+		vec2 amount = smoothstep(0,1,sin(uv*PI)*.1);
+		vec2 simplexed_uv = mix(uv, vec2(SimplexNoise,SimplexNoise), amount);
+		return texture(_BaseNormalMap, simplexed_uv).rgb;
+	}
+	
+    const vec3 off = vec3(-1,0,1);
+
+	vec2 e = vec2(0.01, 0.0);
+
+    float left = CalculateHeight(uv + TEXEL_SIZE * off.xy);
+    float right = CalculateHeight(uv + TEXEL_SIZE * off.zy);
+    float top = CalculateHeight(uv + TEXEL_SIZE * off.yx);
+    float down = CalculateHeight(uv + TEXEL_SIZE * off.yz);
+
+    return normalize(vec3(left-right, 2.0, down-top));
+	
+}
+
+
 
 vec3 SandSteepness(vec2 uv, vec3 N_WORLD, vec3 UP_WORLD, vec3 Z_WORLD) { 
 
@@ -109,6 +120,8 @@ vec3 SandSteepness(vec2 uv, vec3 N_WORLD, vec3 UP_WORLD, vec3 Z_WORLD) {
 	steepness = pow(steepness, _SteepnessSharpnessPower);
 	
 	// Calculates "alignment"
+	// => 0: HORIZONTAL (90 degrees surface)
+	//  => 1:VERTICAL (flat surface)
 	float alignment = clamp(dot(N_WORLD, Z_WORLD), 0.0, 1.0);
 	alignment = pow(alignment, _AlignmentSharpnessPower);
 
@@ -116,12 +129,12 @@ vec3 SandSteepness(vec2 uv, vec3 N_WORLD, vec3 UP_WORLD, vec3 Z_WORLD) {
 	vec3 steep_vertical   = UnpackNormal(texture(_SteepVerticalTex, uv).rgb);
 	
 	// Steepness normal
-	vec3 shallow = nlerp(shallow_vertical, shallow_horizontal, alignment);
-	vec3 steep = nlerp(steep_vertical, steep_horizontal, alignment);
+	vec3 shallow = nlerp(shallow_horizontal, shallow_vertical, alignment);
+	vec3 steep = nlerp(steep_horizontal, steep_vertical, alignment);
 	
 	// Steepness normal
 	vec3 S = nlerp(steep, shallow, steepness);
-	return S;
+	return S * vec3(100.0, 1.0, 100.0);
 }
 
 
@@ -133,18 +146,17 @@ void vertex() {
 	
 	vec2 offsetUVs = UV + uv_offset;
 	
-	vec3 N = calc_normal(offsetUVs);
-	
+	vec3 N = calc_normal(offsetUVs); 
 	// Random direction
 	vec3 R = UnpackNormal(normalize(texture(_SandTex, offsetUVs).rgb * 2.0 - 1.0));
 	
-	vec3 S = SandSteepness(offsetUVs, TransformMult(INV_VIEW_MATRIX, N), UP_WORLD, Z_WORLD);
+	vec3 S = SandSteepness(offsetUVs / TEXEL_SIZE, TransformMult(INV_VIEW_MATRIX, N), UP_WORLD, Z_WORLD);
 	
 	S= nlerp(S, R, _SandStrength);
 	
 	VERTEX.y += CalculateHeight(offsetUVs);
 	NORMAL = N + S;
-
+	
 }
 
 
@@ -176,10 +188,8 @@ vec3 OceanSpecular (vec3 N, vec3 L, vec3 V)
 
 vec3 GlitterSpecular (vec2 uv, vec3 N, vec3 L, vec3 V)
 {
-	
-
-    vec3 G = normalize(texture(_GlitterTex, uv * 70.0).rgb * 2.0 - 1.0); // [0,1]->[-1,+1]
     // Light that reflects on the glitter and hits the eye
+    vec3 G = UnpackNormal( normalize(texture(_GlitterTex, uv * 90.0).rgb * 2.0 - 1.0)); // [0,1]->[-1,+1]
     vec3 R = reflect(L, G);
     float RdotV = max(0, dot(R, V));
     
@@ -200,15 +210,10 @@ void light() {
 	vec3 glitterColor = GlitterSpecular (uv, NORMAL, LIGHT, VIEW);
 	
     vec3 specularColor = clamp(max(rimColor, oceanColor), 0.0, 1.0);
-	DIFFUSE_LIGHT += diffuseColor * ATTENUATION * LIGHT_COLOR * ALBEDO;
-	SPECULAR_LIGHT += (specularColor + glitterColor)  * ATTENUATION * LIGHT_COLOR;
-    
-	
-	
+	DIFFUSE_LIGHT += ( glitterColor + diffuseColor) * ATTENUATION * LIGHT_COLOR * ALBEDO;
+	SPECULAR_LIGHT += ( specularColor) * ATTENUATION;
+
 }
-
-
-
 
 void fragment() {
 	ALBEDO = _TerrainColor;

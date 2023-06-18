@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bfd1jgcifyhdg"
-path="res://.godot/imported/sand_steep_vertical.jpg-440886657b55f6c6b19084824d4e177f.ctex"
+uid="uid://itafysx46jrf"
+path="res://.godot/imported/bayer8tile4.png-01d04741831bb79431309f6dd26be1c0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Resources/SandShader/sand_steep_vertical.jpg"
-dest_files=["res://.godot/imported/sand_steep_vertical.jpg-440886657b55f6c6b19084824d4e177f.ctex"]
+source_file="res://Assets/bayer8tile4.png"
+dest_files=["res://.godot/imported/bayer8tile4.png-01d04741831bb79431309f6dd26be1c0.ctex"]
 
 [params]
 
@@ -19,11 +19,11 @@ compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
-compress/normal_map=1
+compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
-roughness/mode=0
+roughness/mode=1
 roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false

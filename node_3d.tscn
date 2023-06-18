@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dyymsm0hk66id"]
+[gd_scene load_steps=21 format=3 uid="uid://dyymsm0hk66id"]
 
 [ext_resource type="PackedScene" uid="uid://b1fp8ne5arj43" path="res://biome3d.tscn" id="1_jr480"]
 [ext_resource type="Script" path="res://addons/freecam_3D/freecam.gd" id="1_ot6jd"]
@@ -7,7 +7,8 @@
 [ext_resource type="Script" path="res://scripts/PlayerCar/CollisionArea.gd" id="3_0vpvq"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_w7i16"]
 [ext_resource type="Shader" path="res://Resources/PostProcessing/LimitColorPalette.gdshader" id="5_flm3b"]
-[ext_resource type="Texture2D" uid="uid://b5avggt8gg58k" path="res://Assets/fading-16-1x.png" id="6_8l8ga"]
+[ext_resource type="Texture2D" uid="uid://dtfxeghsnlfjx" path="res://Assets/fading-16-32x.png" id="6_xqtc4"]
+[ext_resource type="Texture2D" uid="uid://dbnp7vg7wg7bs" path="res://Resources/SandShader/BayerDither8x8.png" id="7_2ejkf"]
 [ext_resource type="Script" path="res://scripts/Cameras/CamBase.gd" id="7_ljacy"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3D.gd" id="8_qkuul"]
 
@@ -139,16 +140,12 @@ size = Vector2(2, 2)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5yg2y"]
 render_priority = 0
 shader = ExtResource("5_flm3b")
-shader_parameter/num_colors = 16
-shader_parameter/shadows_enabled = true
-shader_parameter/highlights_enabled = true
-shader_parameter/shadow_strength = 0.4
-shader_parameter/highlight_strength = 0.1
-shader_parameter/highlight_color = Color(1, 1, 1, 1)
-shader_parameter/shadow_color = Color(0, 0, 0, 1)
-shader_parameter/outline_width = 0.002
-shader_parameter/outline_color = Color(0.247059, 0.247059, 0.247059, 1)
-shader_parameter/PALETTE_TEXTURE = ExtResource("6_8l8ga")
+shader_parameter/u_bit_depth = 22
+shader_parameter/u_contrast = 1.0
+shader_parameter/u_offset = 0.0
+shader_parameter/u_dither_size = 2
+shader_parameter/u_dither_tex = ExtResource("7_2ejkf")
+shader_parameter/u_color_tex = ExtResource("6_xqtc4")
 
 [node name="Node3D" type="Node3D"]
 
@@ -180,9 +177,10 @@ surface_material_override/0 = SubResource("ShaderMaterial_5nps8")
 environment = SubResource("Environment_7n0pp")
 
 [node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.857904, 0.513811, 0, -0.513811, 0.857904, 0, 101.335, 0)
-light_energy = 2.0
+transform = Transform3D(0.701719, -0.161151, 0.693989, -0.669642, 0.183389, 0.719686, -0.243248, -0.969742, 0.0207734, -0.943741, 101.335, 0)
 shadow_enabled = true
+directional_shadow_mode = 1
+directional_shadow_blend_splits = true
 
 [node name="Player" type="Node" parent="."]
 
@@ -206,13 +204,13 @@ update_rotation = false
 update_scale = false
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
-transform = Transform3D(1, -1.07868e-06, 1.07891e-06, 0, 0.707181, 0.707032, -1.52565e-06, -0.707033, 0.707181, 0.000114441, 139.026, 75.0113)
+transform = Transform3D(1, -8.98901e-07, 8.9909e-07, 0, 0.707182, 0.707032, -1.27137e-06, -0.707032, 0.707181, 9.53674e-05, 139.026, 75.0114)
 projection = 1
 current = true
 size = 128.0
 
 [node name="PostProcessingQuad" type="MeshInstance3D" parent="Player/Camera3D"]
-transform = Transform3D(0.999997, 0, 0, 0, 0.999999, 0, 0, 0, 0.999998, 0, 0, 0)
+transform = Transform3D(-0.344975, -0.928675, -0.136213, 0.901455, -0.287387, -0.323701, 0.261466, -0.23446, 0.936302, 0, 0, 0)
 cast_shadow = 0
 extra_cull_margin = 16384.0
 gi_mode = 0
@@ -231,7 +229,7 @@ zoom_maximum = 128.0
 zoom_in_dampening = 15.0
 
 [node name="PhantomCamera3D" type="Node3D" parent="Player/CamBase"]
-transform = Transform3D(0.999969, -1.07872e-06, 1.07885e-06, 0, 0.707162, 0.707033, -1.5256e-06, -0.707056, 0.707139, 0.000114441, 75, 75.0113)
+transform = Transform3D(0.999969, -8.9893e-07, 8.99038e-07, 0, 0.707163, 0.707032, -1.27133e-06, -0.707055, 0.70714, 9.53674e-05, 75, 75.0114)
 script = ExtResource("8_qkuul")
 priority = 0
 follow_mode = 0
